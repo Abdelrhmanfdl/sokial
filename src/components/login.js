@@ -2,21 +2,9 @@ import { useState, useRef } from "react";
 import {
   Button,
   TextField,
-  Radio,
-  RadioGroup,
-  NativeSelect,
-  Select,
-  MenuItem,
-  InputLabel,
-  FormLabel,
   FormControl,
-  FormControlLabel,
   FormHelperText,
 } from "@material-ui/core";
-
-/*
-TODO :: Show and handle invalidation of account creation
-*/
 
 import * as yup from "yup";
 import { useFormik } from "formik";
@@ -28,7 +16,7 @@ const validationSchema = yup.object({
   email: yup
     .string()
     .email("This email is invalid")
-    .required("Email name is required"),
+    .required("Email is required"),
 
   password: yup
     .string()
@@ -44,6 +32,12 @@ const validationSchema = yup.object({
 });
 
 const Login = (props) => {
+  // Redirection to 'home' is a token recognised
+  if (document.cookie.indexOf("; token") > -1) {
+    window.location.replace("/home");
+    // TODO :: Get a way to enforce not show Login component
+  }
+
   const [loginError, setLoginError] = useState(null);
 
   const formik = useFormik({
@@ -109,6 +103,10 @@ const Login = (props) => {
         <Button type="submit" variant="contained" color="primary">
           Login
         </Button>
+        <small>
+          <span style={{ color: "gray" }}>want to create an account? </span>
+          <a href="\signup">signup</a>
+        </small>
       </FormControl>
     </form>
   );

@@ -4,11 +4,6 @@ import {
   TextField,
   Radio,
   RadioGroup,
-  NativeSelect,
-  Select,
-  MenuItem,
-  InputLabel,
-  FormLabel,
   FormControl,
   FormControlLabel,
   FormHelperText,
@@ -59,7 +54,7 @@ const validationSchema = yup.object({
   email: yup
     .string()
     .email("This email is invalid")
-    .required("Email name is required"),
+    .required("Email is required"),
 
   password: yup
     .string()
@@ -226,6 +221,11 @@ const Birthdate = (props) => {
 };
 
 const Signup = (props) => {
+  // Redirection to 'home' is a token recognised
+  if (document.cookie.indexOf("; token") > -1) {
+    window.location.replace("/home");
+  }
+
   const formik = useFormik({
     initialValues: {
       fname: "",
@@ -379,6 +379,10 @@ const Signup = (props) => {
         <Button type="submit" variant="contained" color="primary">
           SignUp
         </Button>
+        <small>
+          <span style={{ color: "gray" }}>already have an account? </span>
+          <a href="\login">login</a>
+        </small>
       </FormControl>
     </form>
   );
