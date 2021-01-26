@@ -33,10 +33,10 @@ const validationSchema = yup.object({
 
 const Login = (props) => {
   // Redirection to 'home' is a token recognised
-  if (document.cookie.indexOf("; token") > -1) {
+  /*if (document.cookie.indexOf("; token") > -1) {
     window.location.replace("/home");
     // TODO :: Get a way to enforce not show Login component
-  }
+  }*/
 
   const [loginError, setLoginError] = useState(null);
 
@@ -67,6 +67,9 @@ const Login = (props) => {
         if (!resJson.valid) {
           setLoginError({ message: resJson.message });
           console.log(resJson.message);
+        } else {
+          // valid request
+          props.gotUserData(resJson.userData);
         }
       } catch (err) {
         console.log(err.message);
@@ -75,7 +78,7 @@ const Login = (props) => {
   });
 
   return (
-    <form onSubmit={formik.handleSubmit}>
+    <form id="login-form" onSubmit={formik.handleSubmit}>
       <FormControl error={loginError}>
         <FormHelperText disabled={loginError}>
           {loginError && loginError.message}
