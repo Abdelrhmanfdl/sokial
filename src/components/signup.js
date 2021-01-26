@@ -263,7 +263,13 @@ const Signup = (props) => {
             "Content-Type": "application/json",
           },
         });
-        console.log(res.status);
+        const resJson = await res.json();
+        if (!resJson.valid) {
+          console.log(resJson.message);
+        } else {
+          // valid request
+          props.gotUserData(resJson.userData);
+        }
       } catch (err) {
         console.log(err.message);
       }
