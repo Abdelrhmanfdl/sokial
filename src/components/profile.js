@@ -1,29 +1,50 @@
 import { TextField, TextareaAutosize, Grid, Button } from "@material-ui/core";
+import ProfileHeader from "./profileHeader";
+import Posting from "./posting";
+import PostsProfileSection from "./postsProfileSection";
+import { useState, useEffect } from "react";
 
 const Profile = (props) => {
+  const [profileData, setProfileData] = useState({
+    firstName: "",
+    lastName: "",
+  });
+
+  // Get the userId in the path (want to get his profile)
+  const params = new URLSearchParams(window.location.search);
+
+  if (params.get("id") === null) {
+    // then it's my profile
+    window.location.replace(
+      `${window.location.origin}/profile?id=${props.identity.id}`
+    );
+  }
+
+  // Get basic data of current profile
+  useEffect(() => {
+    fetch(`/get-basic-user-data/${params.get("id")}`, {
+      method: "GET",
+    })
+      .then((res) => {
+        return res.json();
+      })
+      .then((res) => {
+        if (!res.valid) throw new Error(res.message);
+        else {
+          setProfileData(res.userData);
+          console.log(">>>", profileData);
+        }
+      })
+      .catch((err) => {
+        console.log(err.message);
+      });
+  }, []);
+
+  const isMyProfile = params.get("id") == props.identity.id;
+
   return (
     <div id="profile">
-      <div id="profile-header-div">
-        <div id="profile-cover-container"></div>
-        <div id="profile-img-container">
-          <div id="profile-img-frame"></div>
-        </div>
-        <div id="profile-name-container">Abdelrhman Ahmed Fadl</div>
-        <div id="profile-header-options-container">
-          <Button id="profile-header-posts-option-btn" size="large">
-            Posts
-          </Button>
-          <Button id="profile-header-about-option-btn" size="large">
-            About
-          </Button>
-          <Button id="profile-header-friends-option-btn" size="large">
-            Friends
-          </Button>
-          <Button id="profile-header-photos-option-btn" size="large">
-            Photos
-          </Button>
-        </div>
-      </div>
+      <ProfileHeader profileData={profileData} />
       <Grid
         id="profile-two-colums"
         direction="row"
@@ -53,27 +74,19 @@ const Profile = (props) => {
             Friends
           </div>
         </Grid>
-        <Grid
-          id="profile-posts-section"
-          className="profile-posts-section"
-          item
-          sm={6}
-          xs={12}
-        >
-          POSTS
-          <div id="profile-posting-section">
-            <TextareaAutosize
-              aria-label="empty textarea"
-              placeholder="What's in your mind?"
-              style={{
-                width: "100%",
-                height: "90px",
-                outlineStyle: "none",
-                borderStyle: "none",
-              }}
-            />
-            <Button>Post</Button>
-          </div>
+
+        <Grid id="profile-right-column" item sm={6} xs={12}>
+          <Posting
+            identity={props.identity}
+            isMyProfile={isMyProfile}
+            profileData={profileData}
+          />
+          <PostsProfileSection
+            identity={props.identity}
+            isMyProfile={isMyProfile}
+            profileId={params.get("id")}
+            profileData={profileData}
+          />
         </Grid>
       </Grid>
     </div>
