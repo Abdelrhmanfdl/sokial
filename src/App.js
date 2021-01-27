@@ -4,6 +4,7 @@ import Login from "./components/login";
 import { Link, Switch, Route, BrowserRouter as Router } from "react-router-dom";
 import Profile from "./components/profile";
 import Posting from "./components/posting";
+import Post from "./components/post";
 
 import { useState, Component } from "react";
 
@@ -101,7 +102,6 @@ class App extends Component {
   async componentDidMount() {
     let res = await fetch("/about-auth", { method: "GET" });
     res = await res.json();
-    console.log(res);
 
     if (res.auth) {
       if (
@@ -140,8 +140,12 @@ class App extends Component {
                 />
               )}
             />
-            <Route path="/profile" component={Profile} />
+            <Route
+              path="/profile"
+              component={() => <Profile identity={this.state.identity} />}
+            />
             <Route path="/posting" component={Posting} />
+            <Route path="/post" component={Post} />
           </Switch>
         </Router>
       );
