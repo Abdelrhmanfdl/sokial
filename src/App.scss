@@ -1,10 +1,12 @@
+@import "./css/variables";
 @import "./css/profile";
 @import "./css/login";
+@import "./css/post";
 
 * {
   box-sizing: border-box;
 }
 
 body {
-  background-color: whitesmoke;
+  background-color: $bg-main;
 }
