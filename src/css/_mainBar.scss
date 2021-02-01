@@ -1,0 +1,18 @@
+#mainbar-notlogged-buttons {
+  margin-left: 3%;
+}
+
+#mainbar-notlogged-toolbar,
+#mainbar-logged-toolbar {
+  display: flex;
+  justify-content: space-between;
+}
+
+.navlink-button {
+  color: inherit;
+  font-weight: inherit;
+  font-size: inherit;
+  font-style: inherit;
+  font-family: inherit;
+  text-decoration: inherit;
+}

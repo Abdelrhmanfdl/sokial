@@ -1,0 +1,29 @@
+@import "./variables";
+
+.notif-container {
+  max-width: unset;
+  max-height: unset;
+  width: 100%;
+  height: $notif-container-height;
+}
+
+.friendship-notif-entry {
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  border-bottom: 1px rgba(177, 177, 177, 0.233) solid;
+  padding: 10px 0;
+
+  div {
+    display: flex;
+    justify-content: center;
+  }
+}
+
+.friendship-notif-img {
+  width: 40px;
+  height: 40px;
+
+  border-radius: 50%;
+  background-color: yellowgreen;
+}

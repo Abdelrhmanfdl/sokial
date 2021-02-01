@@ -43,7 +43,7 @@ const Posting = (props) => {
 
     if (!res.ok) {
       /*
-        TODO: Handle posting failure
+        TODO:: Handle posting failure
       */
     } else {
       console.log("DONEEE");

@@ -68,12 +68,18 @@
 
 #profile-two-colums {
   width: 60%;
-  margin: 20px auto 0px auto;
+  margin: 20px auto 10px auto;
 }
 
 #profile-left-column {
   display: flex;
   flex-direction: column;
+}
+
+#profile-right-column {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .profile-posts-section {

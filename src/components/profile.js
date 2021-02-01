@@ -5,12 +5,10 @@ import PostsProfileSection from "./postsProfileSection";
 import { useState, useEffect } from "react";
 
 const Profile = (props) => {
-  const [profileData, setProfileData] = useState({
-    firstName: "",
-    lastName: "",
-  });
+  const [profileData, setProfileData] = useState(null);
+  const [friendshipRel, setFriendshipRel] = useState(null);
 
-  // Get the userId in the path (want to get his profile)
+  // Get the userId in the path (want to get this profile)
   const params = new URLSearchParams(window.location.search);
 
   if (params.get("id") === null) {
@@ -20,11 +18,64 @@ const Profile = (props) => {
     );
   }
 
+  // Friendship related functions
+  const friendshipRelatedFunctions = {};
+  friendshipRelatedFunctions.handleAddFriendClick = () => {
+    fetch(`/friendship-request/${params.get("id")}`, { method: "POST" })
+      .then((res) => {
+        if (!res.ok) throw new Error(res.message);
+        window.location.reload();
+      })
+      .catch((err) => {});
+  };
+
+  friendshipRelatedFunctions.handleAcceptFriendship = () => {
+    fetch(`/friendship-request/accept/${params.get("id")}`, { method: "POST" })
+      .then((res) => {
+        if (!res.ok) throw new Error(res.message);
+        window.location.reload();
+      })
+      .catch((err) => {});
+  };
+
+  friendshipRelatedFunctions.handleUnrequestFriendship = () => {
+    fetch(`/friendship-request/${params.get("id")}`, { method: "DELETE" })
+      .then((res) => {
+        if (!res.ok) throw new Error(res.message);
+        window.location.reload();
+      })
+      .catch((err) => {});
+  };
+
+  friendshipRelatedFunctions.handleRejectFriendship = () => {
+    fetch(`/friendship-request/${params.get("id")}`, { method: "DELETE" })
+      .then((res) => {
+        if (!res.ok) throw new Error(res.message);
+        window.location.reload();
+      })
+      .catch((err) => {});
+  };
+
+  friendshipRelatedFunctions.handleUnfriendClick = () => {
+    fetch(`/friends/unfriend/${params.get("id")}`, { method: "DELETE" })
+      .then((res) => {
+        if (!res.ok) throw new Error(res.message);
+        window.location.reload();
+      })
+      .catch((err) => {});
+  };
+
   // Get basic data of current profile
   useEffect(() => {
-    fetch(`/get-basic-user-data/${params.get("id")}`, {
-      method: "GET",
-    })
+    fetch(
+      `/get-basic-user-data/${params.get("id")}?` +
+        new URLSearchParams({
+          getFriendshipRel: !isMyProfile,
+        }),
+      {
+        method: "GET",
+      }
+    )
       .then((res) => {
         return res.json();
       })
@@ -32,7 +83,7 @@ const Profile = (props) => {
         if (!res.valid) throw new Error(res.message);
         else {
           setProfileData(res.userData);
-          console.log(">>>", profileData);
+          setFriendshipRel(res.friendshipRel);
         }
       })
       .catch((err) => {
@@ -42,55 +93,72 @@ const Profile = (props) => {
 
   const isMyProfile = params.get("id") == props.identity.id;
 
-  return (
-    <div id="profile">
-      <ProfileHeader profileData={profileData} />
-      <Grid
-        id="profile-two-colums"
-        direction="row"
-        justify={"space-evenly"}
-        container
-      >
-        <Grid id="profile-left-column" item sm={5} xs={12}>
-          <div
-            id="profile-posts-about-section"
-            className="profile-posts-section"
-            item
-          >
-            About
-          </div>
-          <div
-            id="profile-posts-photos-section"
-            className="profile-posts-section"
-            item
-          >
-            Photos
-          </div>
-          <div
-            id="profile-posts-friends-section"
-            className="profile-posts-section"
-            item
-          >
-            Friends
-          </div>
-        </Grid>
+  if (profileData === null || (!isMyProfile && !friendshipRel)) return null;
+  else
+    return (
+      <div id="profile">
+        <ProfileHeader
+          profileData={profileData}
+          isMyProfile={isMyProfile}
+          areFriends={isMyProfile ? undefined : friendshipRel.areFriends}
+          thereIsFrReq={
+            friendshipRel &&
+            (friendshipRel.friendshipReqSenderId ||
+              friendshipRel.friendshipReqReceiverId)
+          }
+          didISendFrReq={
+            isMyProfile
+              ? undefined
+              : friendshipRel.friendshipReqSenderId === props.identity.id
+          }
+          friendshipRelatedFunctions={friendshipRelatedFunctions}
+        />
+        <Grid
+          id="profile-two-colums"
+          direction="row"
+          justify={"space-evenly"}
+          container
+        >
+          <Grid id="profile-left-column" item sm={5} xs={12}>
+            <div
+              id="profile-posts-about-section"
+              className="profile-posts-section"
+              item
+            >
+              About
+            </div>
+            <div
+              id="profile-posts-photos-section"
+              className="profile-posts-section"
+              item
+            >
+              Photos
+            </div>
+            <div
+              id="profile-posts-friends-section"
+              className="profile-posts-section"
+              item
+            >
+              Friends
+            </div>
+          </Grid>
 
-        <Grid id="profile-right-column" item sm={6} xs={12}>
-          <Posting
-            identity={props.identity}
-            isMyProfile={isMyProfile}
-            profileData={profileData}
-          />
-          <PostsProfileSection
-            identity={props.identity}
-            isMyProfile={isMyProfile}
-            profileId={params.get("id")}
-            profileData={profileData}
-          />
+          <Grid id="profile-right-column" item sm={6} xs={12}>
+            <Posting
+              identity={props.identity}
+              isMyProfile={isMyProfile}
+              profileData={profileData}
+            />
+            <PostsProfileSection
+              identity={props.identity}
+              isMyProfile={isMyProfile}
+              profileId={params.get("id")}
+              profileData={profileData}
+            />
+          </Grid>
         </Grid>
-      </Grid>
-    </div>
-  );
+      </div>
+    );
 };
 
 export default Profile;

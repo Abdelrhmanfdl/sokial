@@ -24,7 +24,7 @@
   display: flex;
   flex-direction: row;
 
-  border-bottom: rgba(173, 173, 173, 0.199) solid 1px;
+  border-bottom: $post-inner-border;
   align-items: center;
 }
 
@@ -57,7 +57,7 @@
 
 .post-footer {
   width: 100%;
-  border-top: rgba(173, 173, 173, 0.199) solid 1px;
+  border-top: $post-inner-border;
 
   display: flex;
   flex-direction: row;
