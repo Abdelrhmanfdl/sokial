@@ -18,53 +18,6 @@ const Profile = (props) => {
     );
   }
 
-  // Friendship related functions
-  const friendshipRelatedFunctions = {};
-  friendshipRelatedFunctions.handleAddFriendClick = () => {
-    fetch(`/friendship-request/${params.get("id")}`, { method: "POST" })
-      .then((res) => {
-        if (!res.ok) throw new Error(res.message);
-        window.location.reload();
-      })
-      .catch((err) => {});
-  };
-
-  friendshipRelatedFunctions.handleAcceptFriendship = () => {
-    fetch(`/friendship-request/accept/${params.get("id")}`, { method: "POST" })
-      .then((res) => {
-        if (!res.ok) throw new Error(res.message);
-        window.location.reload();
-      })
-      .catch((err) => {});
-  };
-
-  friendshipRelatedFunctions.handleUnrequestFriendship = () => {
-    fetch(`/friendship-request/${params.get("id")}`, { method: "DELETE" })
-      .then((res) => {
-        if (!res.ok) throw new Error(res.message);
-        window.location.reload();
-      })
-      .catch((err) => {});
-  };
-
-  friendshipRelatedFunctions.handleRejectFriendship = () => {
-    fetch(`/friendship-request/${params.get("id")}`, { method: "DELETE" })
-      .then((res) => {
-        if (!res.ok) throw new Error(res.message);
-        window.location.reload();
-      })
-      .catch((err) => {});
-  };
-
-  friendshipRelatedFunctions.handleUnfriendClick = () => {
-    fetch(`/friends/unfriend/${params.get("id")}`, { method: "DELETE" })
-      .then((res) => {
-        if (!res.ok) throw new Error(res.message);
-        window.location.reload();
-      })
-      .catch((err) => {});
-  };
-
   // Get basic data of current profile
   useEffect(() => {
     fetch(
@@ -111,7 +64,6 @@ const Profile = (props) => {
               ? undefined
               : friendshipRel.friendshipReqSenderId === props.identity.id
           }
-          friendshipRelatedFunctions={friendshipRelatedFunctions}
         />
         <Grid
           id="profile-two-colums"
@@ -119,7 +71,7 @@ const Profile = (props) => {
           justify={"space-evenly"}
           container
         >
-          <Grid id="profile-left-column" item sm={5} xs={12}>
+          {/*<Grid id="profile-left-column" item sm={5} xs={12}>
             <div
               id="profile-posts-about-section"
               className="profile-posts-section"
@@ -141,9 +93,9 @@ const Profile = (props) => {
             >
               Friends
             </div>
-          </Grid>
+          </Grid>*/}
 
-          <Grid id="profile-right-column" item sm={6} xs={12}>
+          <Grid id="profile-right-column" item sm={10} lg={10} xs={12}>
             <Posting
               identity={props.identity}
               isMyProfile={isMyProfile}

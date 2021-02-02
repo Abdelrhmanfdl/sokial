@@ -31,7 +31,8 @@ class PostCommentsSections extends Component {
     this.fetchNewComments = this.fetchNewComments.bind(this);
     this.pushToShownComments = this.pushToShownComments.bind(this);
     this.handleWaitingForComments = this.handleWaitingForComments.bind(this);
-    //this.toggleReaction = this.toggleReaction.bind(this);
+    this.handleEditComment = this.handleEditComment.bind(this);
+    this.handleDeleteComment = this.handleDeleteComment.bind(this);
   }
 
   handleSendComment() {
@@ -51,6 +52,51 @@ class PostCommentsSections extends Component {
       .catch((err) => {
         console.log(err.message);
       });
+  }
+
+  handleEditComment(commentIndex, newContent) {
+    fetch(`/comment/${this.state.fetchedComments[commentIndex].id}`, {
+      method: "PUT",
+      headers: { "Content-type": "application/json; charset=UTF-8" },
+      body: JSON.stringify({ newContent: newContent }),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to edit comment");
+      })
+      .catch((err) => {
+        console.log(err.message);
+      });
+
+    let tmpCommentsDivs = [...this.state.shownCommentsDivs];
+    tmpCommentsDivs[commentIndex] = (
+      <PostComment
+        id={this.state.fetchedComments[commentIndex].id}
+        commentIndex={commentIndex}
+        content={newContent}
+        authorUser={this.state.fetchedComments[commentIndex].author_user}
+        profileData={this.props.profileData}
+        identity={this.props.identity}
+        handleEditComment={this.handleEditComment}
+        handleDeleteComment={this.handleDeleteComment}
+      />
+    );
+    this.setState({ shownCommentsDivs: tmpCommentsDivs });
+  }
+
+  handleDeleteComment(commentIndex) {
+    fetch(`/comment/${this.state.fetchedComments[commentIndex].id}`, {
+      method: "DELETE",
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to delete comment");
+      })
+      .catch((err) => {
+        console.log(err.message);
+      });
+
+    let tmpCommentsDivs = [...this.state.shownCommentsDivs];
+    tmpCommentsDivs[commentIndex] = null;
+    this.setState({ shownCommentsDivs: tmpCommentsDivs });
   }
 
   /*  toggleReaction(postIndex, newReactionType) {
@@ -134,14 +180,17 @@ class PostCommentsSections extends Component {
     );
 
     for (let i = toPushLeft; i < toPushRight; i++) {
+      console.log(this.state.fetchedComments[i].author_user);
       tmpCommentsDivs.push(
         <PostComment
           id={this.state.fetchedComments[i].id}
-          postIndex={tmpCommentsDivs.length}
+          commentIndex={tmpCommentsDivs.length}
           content={this.state.fetchedComments[i].content}
           authorUser={this.state.fetchedComments[i].author_user}
+          profileData={this.props.profileData}
           identity={this.props.identity}
-          //toggleReaction={this.toggleReaction}
+          handleEditComment={this.handleEditComment}
+          handleDeleteComment={this.handleDeleteComment}
         />
       );
     }

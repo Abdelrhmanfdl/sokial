@@ -4,6 +4,8 @@ import RemoveCircleIcon from "@material-ui/icons/RemoveCircle";
 import CancelIcon from "@material-ui/icons/Cancel";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 
+import { friendshipRelatedFunctions } from "../usable functions/endpoint-related";
+
 const ProfileHeader = (props) => {
   const friendshipButtonsAttr = {
     variant: "outlined",
@@ -14,7 +16,9 @@ const ProfileHeader = (props) => {
     <Button
       {...friendshipButtonsAttr}
       startIcon={<RemoveCircleIcon />}
-      onClick={props.friendshipRelatedFunctions.handleUnfriendClick}
+      onClick={() => {
+        friendshipRelatedFunctions.handleUnfriendClick(props.profileData.id);
+      }}
     >
       Unfriend
     </Button>
@@ -22,7 +26,9 @@ const ProfileHeader = (props) => {
     <Button
       {...friendshipButtonsAttr}
       startIcon={<AddCircleIcon />}
-      onClick={props.friendshipRelatedFunctions.handleAddFriendClick}
+      onClick={() => {
+        friendshipRelatedFunctions.handleAddFriendClick(props.profileData.id);
+      }}
     >
       Add Friend
     </Button>
@@ -30,12 +36,22 @@ const ProfileHeader = (props) => {
     <Button
       {...friendshipButtonsAttr}
       startIcon={<CancelIcon />}
-      onClick={props.friendshipRelatedFunctions.handleUnrequestFriendship}
+      onClick={() => {
+        friendshipRelatedFunctions.handleUnrequestFriendship(
+          props.profileData.id
+        );
+      }}
     >
       Unrequest friendship
     </Button>
   ) : (
-    <Button {...friendshipButtonsAttr} startIcon={<CheckCircleIcon />}>
+    <Button
+      {...friendshipButtonsAttr}
+      startIcon={<CheckCircleIcon />}
+      onClick={() => {
+        friendshipRelatedFunctions.handleAcceptFriendship(props.profileData.id);
+      }}
+    >
       Accept friendship
     </Button>
   );

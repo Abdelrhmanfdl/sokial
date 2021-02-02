@@ -1,15 +1,12 @@
 import {
-  TextField,
   TextareaAutosize,
-  Grid,
   Button,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
 } from "@material-ui/core";
-
-import { useFormik } from "formik";
+import generalFunctions from "../usable functions/general";
 import { useState, useRef } from "react";
 
 const Posting = (props) => {
@@ -18,6 +15,8 @@ const Posting = (props) => {
   */
 
   const [openDialog, setOpenDialog] = useState(false);
+  const [disablePosting, setDisablePosting] = useState(true);
+  const [disableWriting, setDisableWriting] = useState(false);
   const textareaRef = useRef(null);
 
   const handleOpenPostingDialog = () => {
@@ -27,28 +26,28 @@ const Posting = (props) => {
     setOpenDialog(false);
   };
 
-  const handleClickPost = async () => {
-    const D = new Date();
-    const res = await fetch("/post", {
+  const handleClickPost = () => {
+    setDisablePosting(true);
+    setDisableWriting(true);
+    fetch("/post", {
       method: "POST",
       headers: { "Content-type": "application/json; charset=UTF-8" },
       body: JSON.stringify({
         content: textareaRef.current.value,
-        privacy: 5 /* TODO:: Update  */,
-        timestamp: `${D.getFullYear()}-${
-          D.getMonth() + 1
-        }-${D.getDate()} ${D.getHours()}-${D.getMinutes()}-${D.getSeconds()} `,
+        privacy: 5 /* TODO :: Update  */,
+        timestamp: generalFunctions.getTimestamp(),
       }),
-    });
-
-    if (!res.ok) {
-      /*
-        TODO:: Handle posting failure
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Can't post.");
+        setOpenDialog(false);
+        setDisableWriting(false);
+      })
+      .catch((res) => {
+        /*
+        TODO :: Handle posting failure
       */
-    } else {
-      console.log("DONEEE");
-      setOpenDialog(false);
-    }
+      });
   };
 
   if (!props.isMyProfile) return null;
@@ -70,7 +69,13 @@ const Posting = (props) => {
             rowsMin={3}
             rowsMax={8}
             autoFocus
+            disabled={disableWriting}
             placeholder="What's on your mind?"
+            onInput={() => {
+              if (textareaRef.current.value.trim() == "") {
+                setDisablePosting(true);
+              } else if (disablePosting) setDisablePosting(false);
+            }}
             style={{
               width: "100%",
               outlineStyle: "none",
@@ -80,7 +85,9 @@ const Posting = (props) => {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClickPost}>Post</Button>
+          <Button onClick={handleClickPost} disabled={disablePosting}>
+            Post
+          </Button>
         </DialogActions>
       </Dialog>
     </div>

@@ -26,6 +26,55 @@ class PostsProfileSection extends Component {
     this.pushToShownPosts = this.pushToShownPosts.bind(this);
     this.handleWaitingForPosts = this.handleWaitingForPosts.bind(this);
     this.toggleReaction = this.toggleReaction.bind(this);
+    this.handleDeletePost = this.handleDeletePost.bind(this);
+    this.handleEditPost = this.handleEditPost.bind(this);
+  }
+
+  handleEditPost(postIndex, newContent) {
+    fetch(`/post/${this.state.fetchedPosts[postIndex].id}`, {
+      method: "PUT",
+      headers: { "Content-type": "application/json; charset=UTF-8" },
+      body: JSON.stringify({
+        newContent: newContent,
+        newPrivacy: 5, // TODO :: update it
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Error in editing the post");
+      })
+      .catch((res) => {});
+
+    let tmpPostsDivs = [...this.state.shownPostsDivs];
+
+    tmpPostsDivs[postIndex] = (
+      <Post
+        id={this.state.fetchedPosts[postIndex].id}
+        postIndex={postIndex}
+        myReactionType={this.state.fetchedPosts[postIndex].reactions[0]}
+        content={newContent}
+        autherFullName={`${this.props.profileData.firstName} ${this.props.profileData.lastName}`}
+        author_user_id={this.state.fetchedPosts[postIndex].author_user_id}
+        profileData={this.props.profileData}
+        identity={this.props.identity}
+        toggleReaction={this.toggleReaction}
+        handleDeletePost={this.handleDeletePost}
+        handleEditPost={this.handleEditPost}
+      />
+    );
+    this.setState({ shownPostsDivs: tmpPostsDivs });
+  }
+
+  handleDeletePost(postIndex) {
+    fetch(`/post/${this.state.fetchedPosts[postIndex].id}`, {
+      method: "DELETE",
+    })
+      .then((res) => {})
+      .catch((err) => {});
+
+    let tmpPostsDivs = [...this.state.shownPostsDivs];
+
+    tmpPostsDivs[postIndex] = null;
+    this.setState({ shownPostsDivs: tmpPostsDivs });
   }
 
   toggleReaction(postIndex, newReactionType) {
@@ -44,7 +93,12 @@ class PostsProfileSection extends Component {
         myReactionType={newReactionType}
         content={this.state.fetchedPosts[postIndex].content}
         autherFullName={`${this.props.profileData.firstName} ${this.props.profileData.lastName}`}
+        author_user_id={this.state.fetchedPosts[postIndex].author_user_id}
+        profileData={this.props.profileData}
+        identity={this.props.identity}
         toggleReaction={this.toggleReaction}
+        handleDeletePost={this.handleDeletePost}
+        handleEditPost={this.handleEditPost}
       />
     );
     this.setState({ shownPostsDivs: tmpPostsDivs });
@@ -78,7 +132,7 @@ class PostsProfileSection extends Component {
     const escapePosts = this.state.fetchedPosts.length;
     const limitPosts = this.numPostsToFetch;
 
-    console.log(`${escapePosts} ${limitPosts}`);
+    //console.log(`${escapePosts} ${limitPosts}`);
 
     return new Promise((resolve, reject) => {
       fetch(
@@ -115,17 +169,21 @@ class PostsProfileSection extends Component {
     );
 
     for (let i = toPushLeft; i < toPushRight; i++) {
-      console.log(this.state.fetchedPosts[i]);
+      //console.log(this.state.fetchedPosts[i]);
 
       tmpPostsDivs.push(
         <Post
           id={this.state.fetchedPosts[i].id}
           postIndex={tmpPostsDivs.length}
+          profileData={this.props.profileData}
           myReactionType={this.state.fetchedPosts[i].reactions[0]}
+          author_user_id={this.state.fetchedPosts[i].author_user_id}
           content={this.state.fetchedPosts[i].content}
           autherFullName={`${this.props.profileData.firstName} ${this.props.profileData.lastName}`}
           identity={this.props.identity}
           toggleReaction={this.toggleReaction}
+          handleDeletePost={this.handleDeletePost}
+          handleEditPost={this.handleEditPost}
         />
       );
     }
