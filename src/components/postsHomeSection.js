@@ -3,13 +3,13 @@ import { Component } from "react";
 import { Button } from "@material-ui/core";
 import CircularProgress from "@material-ui/core/CircularProgress";
 
-class PostsProfileSection extends Component {
+class PostsHomeSection extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
       noMorePosts: false,
-      waitingForPosts: false,
+      waitingForPosts: true,
       firstFetchDone: false,
       fetchedPosts: [],
       shownPostsDivs: [],
@@ -31,7 +31,7 @@ class PostsProfileSection extends Component {
   }
 
   handleEditPost(postIndex, newContent) {
-    fetch(`/post/${this.state.fetchedPosts[postIndex].id}`, {
+    fetch(`/post/${this.state.fetchedPosts[postIndex].post_id}`, {
       method: "PUT",
       headers: { "Content-type": "application/json; charset=UTF-8" },
       body: JSON.stringify({
@@ -48,14 +48,14 @@ class PostsProfileSection extends Component {
 
     tmpPostsDivs[postIndex] = (
       <Post
-        id={this.state.fetchedPosts[postIndex].id}
+        id={this.state.fetchedPosts[postIndex].post_id}
         postIndex={postIndex}
-        myReactionType={this.state.fetchedPosts[postIndex].reactions[0]}
+        myReactionType={this.state.fetchedPosts[postIndex].my_reaction_type}
         content={newContent}
         postOwnerData={{
-          id: this.props.profileId,
-          firstName: this.props.profileData.firstName,
-          lastName: this.props.profileData.lastName,
+          id: this.state.fetchedPosts[postIndex].author_user_id,
+          firstName: this.state.fetchedPosts[postIndex].first_name,
+          lastName: this.state.fetchedPosts[postIndex].last_name,
         }}
         postCounters={{
           reactionsCounter: this.state.fetchedPosts[postIndex]
@@ -72,7 +72,7 @@ class PostsProfileSection extends Component {
   }
 
   handleDeletePost(postIndex) {
-    fetch(`/post/${this.state.fetchedPosts[postIndex].id}`, {
+    fetch(`/post/${this.state.fetchedPosts[postIndex].post_id}`, {
       method: "DELETE",
     })
       .then((res) => {})
@@ -95,14 +95,14 @@ class PostsProfileSection extends Component {
 
     tmpPostsDivs[postIndex] = (
       <Post
-        id={this.state.fetchedPosts[postIndex].id}
+        id={this.state.fetchedPosts[postIndex].post_id}
         postIndex={postIndex}
         myReactionType={newReactionType}
         content={this.state.fetchedPosts[postIndex].content}
         postOwnerData={{
-          id: this.props.profileId,
-          firstName: this.props.profileData.firstName,
-          lastName: this.props.profileData.lastName,
+          id: this.state.fetchedPosts[postIndex].author_user_id,
+          firstName: this.state.fetchedPosts[postIndex].first_name,
+          lastName: this.state.fetchedPosts[postIndex].last_name,
         }}
         postCounters={{
           reactionsCounter: this.state.fetchedPosts[postIndex]
@@ -124,7 +124,7 @@ class PostsProfileSection extends Component {
     if (this.state.fetchedPosts.length === this.state.shownPostsDivs.length) {
       // Need to fetch new posts
       this.fetchNewPosts().then((posts) => {
-        //console.log("Fetched posts >> ", posts);
+        console.log("Fetched posts >> ", posts);
         if (posts.length === 0) {
           this.setState({ noMorePosts: true });
         } else {
@@ -150,7 +150,7 @@ class PostsProfileSection extends Component {
 
     return new Promise((resolve, reject) => {
       fetch(
-        `/get-posts/${this.props.profileId}?` +
+        `/home/posts?` +
           new URLSearchParams({
             esc: escapePosts,
             limit: limitPosts,
@@ -166,8 +166,8 @@ class PostsProfileSection extends Component {
           if (!res.valid) {
             // TODO :: Handle invalid fetch
           } else {
-            //console.log(res.posts.length);
-            return resolve(res.posts);
+            console.log("Posts >>", res.entries);
+            return resolve(res.entries);
           }
         });
     });
@@ -187,18 +187,18 @@ class PostsProfileSection extends Component {
 
       tmpPostsDivs.push(
         <Post
-          id={this.state.fetchedPosts[i].id}
+          id={this.state.fetchedPosts[i].post_id}
           postIndex={tmpPostsDivs.length}
           postOwnerData={{
-            id: this.props.profileId,
-            firstName: this.props.profileData.firstName,
-            lastName: this.props.profileData.lastName,
+            id: this.state.fetchedPosts[i].author_user_id,
+            firstName: this.state.fetchedPosts[i].first_name,
+            lastName: this.state.fetchedPosts[i].last_name,
           }}
           postCounters={{
             reactionsCounter: this.state.fetchedPosts[i].reactions_counter,
             commentsCounter: this.state.fetchedPosts[i].comments_counter,
           }}
-          myReactionType={this.state.fetchedPosts[i].reactions[0]}
+          myReactionType={this.state.fetchedPosts[i].my_reaction_type}
           content={this.state.fetchedPosts[i].content}
           identity={this.props.identity}
           toggleReaction={this.toggleReaction}
@@ -240,7 +240,10 @@ class PostsProfileSection extends Component {
           <CircularProgress />
         </div>
       );
-    else if (this.state.noMorePosts === false) {
+    else if (
+      this.state.noMorePosts === false &&
+      this.state.shownPostsDivs.length
+    ) {
       endDiv = (
         <div>
           <Button
@@ -261,4 +264,4 @@ class PostsProfileSection extends Component {
   }
 }
 
-export default PostsProfileSection;
+export default PostsHomeSection;

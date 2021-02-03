@@ -154,7 +154,11 @@ class FriendshipNotificationsButton extends Component {
     return (
       <div className="notifbtn-with-container">
         <IconButton color="inherit" onClick={this.handleClickFriendshipNotif}>
-          <Badge badgeContent={3} color="secondary" variant="dot">
+          <Badge
+            badgeContent={this.state.fetchedNotif.length}
+            color="secondary"
+            variant="dot"
+          >
             <PersonAddIcon />
           </Badge>
         </IconButton>

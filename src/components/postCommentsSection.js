@@ -73,8 +73,8 @@ class PostCommentsSections extends Component {
         id={this.state.fetchedComments[commentIndex].id}
         commentIndex={commentIndex}
         content={newContent}
-        authorUser={this.state.fetchedComments[commentIndex].author_user}
-        profileData={this.props.profileData}
+        commentAuthor={this.state.fetchedComments[commentIndex].author_user}
+        postOwnerData={this.props.postOwnerData}
         identity={this.props.identity}
         handleEditComment={this.handleEditComment}
         handleDeleteComment={this.handleDeleteComment}
@@ -186,8 +186,8 @@ class PostCommentsSections extends Component {
           id={this.state.fetchedComments[i].id}
           commentIndex={tmpCommentsDivs.length}
           content={this.state.fetchedComments[i].content}
-          authorUser={this.state.fetchedComments[i].author_user}
-          profileData={this.props.profileData}
+          commentAuthor={this.state.fetchedComments[i].author_user}
+          postOwnerData={this.props.postOwnerData}
           identity={this.props.identity}
           handleEditComment={this.handleEditComment}
           handleDeleteComment={this.handleDeleteComment}

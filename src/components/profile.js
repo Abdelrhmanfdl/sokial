@@ -42,7 +42,7 @@ const Profile = (props) => {
       .catch((err) => {
         console.log(err.message);
       });
-  }, []);
+  }, [params.get("id")]);
 
   const isMyProfile = params.get("id") == props.identity.id;
 
@@ -71,7 +71,7 @@ const Profile = (props) => {
           justify={"space-evenly"}
           container
         >
-          {/*<Grid id="profile-left-column" item sm={5} xs={12}>
+          <Grid id="profile-left-column" item sm={4} xs={12}>
             <div
               id="profile-posts-about-section"
               className="profile-posts-section"
@@ -93,9 +93,9 @@ const Profile = (props) => {
             >
               Friends
             </div>
-          </Grid>*/}
+          </Grid>
 
-          <Grid id="profile-right-column" item sm={10} lg={10} xs={12}>
+          <Grid id="profile-right-column" item sm={5} lg={5} xs={12}>
             <Posting
               identity={props.identity}
               isMyProfile={isMyProfile}

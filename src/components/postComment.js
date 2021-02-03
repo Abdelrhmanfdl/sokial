@@ -29,10 +29,10 @@ const PostComment = (props) => {
       <div className="comment-author-img"></div>
       <div style={{ width: "100%" }}>
         <div className="comment-author-name">
-          {`${props.authorUser.first_name} ${props.authorUser.last_name}`}
+          {`${props.commentAuthor.first_name} ${props.commentAuthor.last_name}`}
         </div>
 
-        {props.authorUser.id === props.identity.id ? (
+        {props.commentAuthor.id === props.identity.id ? (
           <div className="comment-more-div">
             {!editing ? (
               <Button

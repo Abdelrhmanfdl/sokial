@@ -7,14 +7,14 @@ import {
   Button,
 } from "@material-ui/core";
 import { Badge } from "@material-ui/core";
-import NotificationsIcon from "@material-ui/icons/Notifications";
-import PersonAddIcon from "@material-ui/icons/PersonAdd";
+import HomeIcon from "@material-ui/icons/Home";
 import FriendshipNotificationsButton from "./friendshipNotificationsButton";
+import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 
 const MainBar = (props) => {
   if (props.identity == null) {
     return (
-      <AppBar position="fixed">
+      <AppBar position="fixed" id="main-bar">
         <Toolbar id="mainbar-notlogged-toolbar">
           <Typography variant="h6">Sokial</Typography>
           <div id="mainbar-notlogged-buttons">
@@ -34,12 +34,26 @@ const MainBar = (props) => {
     );
   } else {
     return (
-      <AppBar position="fixed">
+      <AppBar position="fixed" id="main-bar">
         <Toolbar id="mainbar-logged-toolbar">
           <Typography variant="h6">Sokial</Typography>
 
-          <FriendshipNotificationsButton identity={props.identity} />
+          <NavLink to="/home" className="navlink-button">
+            <IconButton color="inherit">
+              <HomeIcon />
+            </IconButton>
+          </NavLink>
 
+          <NavLink
+            to={`/profile?id=${props.identity.id}`}
+            className="navlink-button"
+          >
+            <IconButton color="inherit">
+              <AccountCircleIcon />
+            </IconButton>
+          </NavLink>
+
+          <FriendshipNotificationsButton identity={props.identity} />
           <Button id="" color="inherit" onClick={props.logout}>
             Logout
           </Button>

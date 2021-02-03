@@ -4,6 +4,19 @@ import MoreVertIcon from "@material-ui/icons/MoreVert";
 import { useState, useRef } from "react";
 import PostEditing from "./postEditing";
 
+/*
+Props: 
+- id: post id
+- postIndex
+- postOwnerData
+- myReactionType
+- content
+- identity
+- toggleReaction
+- handleDeletePost
+- handleEditPost
+*/
+
 const Post = (props) => {
   const [openCommentsSection, setOpenCommentsSection] = useState(false);
   const [openMore, setOpenMore] = useState(false);
@@ -37,9 +50,11 @@ const Post = (props) => {
         <div className="post-header">
           <div className="post-identity-container">
             <div className="post-profile-photo" />
-            <small style={{ fontWeight: "bold" }}>{props.autherFullName}</small>
+            <small
+              style={{ fontWeight: "bold" }}
+            >{`${props.postOwnerData.firstName} ${props.postOwnerData.lastName}`}</small>
 
-            {props.identity.id == props.author_user_id ? (
+            {props.identity.id == props.postOwnerData.id ? (
               <div className="post-more-div">
                 <Button
                   id="post-more-btn"
@@ -76,24 +91,34 @@ const Post = (props) => {
           {props.content}
         </div>
         <div className="post-footer">
-          <Button
-            onClick={handleToggleLike}
-            color={props.myReactionType ? "secondary" : "default"}
-            variant={props.myReactionType ? "contained" : "default"}
-          >
-            Like
-          </Button>
-          <Button
-            onClick={() => {
-              setOpenCommentsSection(!openCommentsSection);
-            }}
-          >
-            Comment
-          </Button>
+          <div className="post-counters">
+            <div className="post-like-counter">
+              {props.postCounters.reactionsCounter} Likes
+            </div>
+            <div className="post-comment-counter">
+              {props.postCounters.commentsCounter} Comments
+            </div>
+          </div>
+          <div className="post-btns">
+            <Button
+              onClick={handleToggleLike}
+              color={props.myReactionType ? "secondary" : "default"}
+              variant={props.myReactionType ? "contained" : "default"}
+            >
+              Like
+            </Button>
+            <Button
+              onClick={() => {
+                setOpenCommentsSection(!openCommentsSection);
+              }}
+            >
+              Comment
+            </Button>
+          </div>
         </div>
         <PostCommentsSections
           identity={props.identity}
-          profileData={props.profileData}
+          postOwnerData={props.postOwnerData}
           postId={props.id}
           openCommentsSection={openCommentsSection}
         />
