@@ -35,15 +35,14 @@
   margin: -120px auto 0px auto;
   width: $profile-img-rad;
   height: $profile-img-rad;
-  //  background-color: lightcoral;
 }
 
 #profile-img-frame {
   width: inherit;
   height: inherit;
-  background-color: white;
+  background-color: transparent;
   border-width: 2px;
-  border: solid rgb(228, 228, 228);
+  //border: solid rgb(228, 228, 228);
   border-radius: 50%;
 }
 

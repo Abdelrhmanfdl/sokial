@@ -1,9 +1,16 @@
-import { TextField, TextareaAutosize, Grid, Button } from "@material-ui/core";
+import { useRef } from "react";
+import {
+  TextField,
+  TextareaAutosize,
+  Grid,
+  Button,
+  IconButton,
+} from "@material-ui/core";
+import ProfileImg from "./profileImg";
 import AddCircleIcon from "@material-ui/icons/AddCircle";
 import RemoveCircleIcon from "@material-ui/icons/RemoveCircle";
 import CancelIcon from "@material-ui/icons/Cancel";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
-
 import { friendshipRelatedFunctions } from "../usable functions/endpoint-related";
 
 const ProfileHeader = (props) => {
@@ -59,9 +66,12 @@ const ProfileHeader = (props) => {
   return (
     <div id="profile-header-div">
       <div id="profile-cover-container"></div>
-      <div id="profile-img-container">
-        <div id="profile-img-frame"></div>
-      </div>
+      <ProfileImg
+        profileData={props.profileData}
+        isMyProfile={props.isMyProfile}
+        profileData={props.profileData}
+      />
+
       <div id="profile-name-container">{`${props.profileData.firstName} ${props.profileData.lastName}`}</div>
       <div id="profile-friendship-buttons-div">{friendshipRelButton}</div>
       <div id="profile-header-options-container">

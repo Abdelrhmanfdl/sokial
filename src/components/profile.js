@@ -40,7 +40,7 @@ const Profile = (props) => {
         }
       })
       .catch((err) => {
-        console.log(err.message);
+        console.log("ERROR:", err.message);
       });
   }, [params.get("id")]);
 
