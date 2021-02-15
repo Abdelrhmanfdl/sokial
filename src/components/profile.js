@@ -35,9 +35,27 @@ const Profile = (props) => {
       .then((res) => {
         if (!res.valid) throw new Error(res.message);
         else {
-          setProfileData(res.userData);
           setFriendshipRel(res.friendshipRel);
+
+          if (res.userData.profile_photo_path)
+            return Promise.all([
+              res.userData,
+              fetch(
+                `/get-profile-img/${res.userData.id}?` +
+                  new URLSearchParams({
+                    profile_photo_path: res.userData.profile_photo_path,
+                  })
+              ),
+            ]);
+          else setProfileData(res.userData);
         }
+      })
+      .then(([userData, res]) => {
+        if (res && res.ok) return Promise.all([userData, res.blob()]);
+      })
+      .then(([userData, img]) => {
+        img = URL.createObjectURL(img);
+        setProfileData({ ...userData, profileImg: img });
       })
       .catch((err) => {
         console.log("ERROR:", err.message);

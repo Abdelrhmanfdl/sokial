@@ -15,14 +15,17 @@ class PostsHomeSection extends Component {
       shownPostsDivs: [],
     };
 
-    this.numPostsToFetch = 100; // It's a parameter that can be changed
-    this.numPostsToPush = 15; // It's a parameter that can be changed
+    this.numPostsToFetch = 50; // It's a parameter that can be changed
+    this.numPostsToPush = 20; // It's a parameter that can be changed
 
     // This variable is used to prevent making a fetch while
     // haven't get last sent fetch yet. (A problem of scrolling based fetching)
     this.fetching = false;
 
     this.fetchNewPosts = this.fetchNewPosts.bind(this);
+    this.fetchPostsAuthorProfileImage = this.fetchPostsAuthorProfileImage.bind(
+      this
+    );
     this.pushToShownPosts = this.pushToShownPosts.bind(this);
     this.handleWaitingForPosts = this.handleWaitingForPosts.bind(this);
     this.toggleReaction = this.toggleReaction.bind(this);
@@ -56,6 +59,7 @@ class PostsHomeSection extends Component {
           id: this.state.fetchedPosts[postIndex].author_user_id,
           firstName: this.state.fetchedPosts[postIndex].first_name,
           lastName: this.state.fetchedPosts[postIndex].last_name,
+          profileImg: this.state.fetchedPosts[postIndex].profileImg,
         }}
         postCounters={{
           reactionsCounter: this.state.fetchedPosts[postIndex]
@@ -103,6 +107,7 @@ class PostsHomeSection extends Component {
           id: this.state.fetchedPosts[postIndex].author_user_id,
           firstName: this.state.fetchedPosts[postIndex].first_name,
           lastName: this.state.fetchedPosts[postIndex].last_name,
+          profileImg: this.state.fetchedPosts[postIndex].profileImg,
         }}
         postCounters={{
           reactionsCounter: this.state.fetchedPosts[postIndex]
@@ -118,20 +123,55 @@ class PostsHomeSection extends Component {
     this.setState({ shownPostsDivs: tmpPostsDivs });
   }
 
+  fetchPostsAuthorProfileImage(posts) {
+    return new Promise((resolve, reject) => {
+      const allFetchPromises = [];
+      for (let i = 0; i < posts.length; i++) {
+        allFetchPromises.push(
+          fetch(
+            `/get-profile-img/${posts[i].author_user_id}?` +
+              new URLSearchParams({
+                profile_photo_path: posts[i].profile_photo_path,
+              })
+          )
+        );
+      }
+      let fetchesPromise = Promise.all(allFetchPromises);
+      fetchesPromise
+        .then((fetches) => {
+          let blobsPromises = [];
+          for (let i = 0; i < posts.length; i++) {
+            if (fetches[i].ok) blobsPromises.push(fetches[i].blob());
+            else blobsPromises.push(null);
+          }
+          return Promise.all(blobsPromises);
+        })
+        .then((imgs) => {
+          for (let i = 0; i < posts.length; i++) {
+            if (imgs[i]) posts[i].profileImg = URL.createObjectURL(imgs[i]);
+          }
+          resolve(posts);
+        });
+    });
+  }
+
   handleWaitingForPosts() {
     this.setState({ waitingForPosts: true });
 
     if (this.state.fetchedPosts.length === this.state.shownPostsDivs.length) {
       // Need to fetch new posts
       this.fetchNewPosts().then((posts) => {
-        console.log("Fetched posts >> ", posts);
+        //console.log("Fetched posts >> ", posts);
         if (posts.length === 0) {
           this.setState({ noMorePosts: true });
         } else {
-          this.setState({
-            fetchedPosts: this.state.fetchedPosts.concat(posts),
+          this.fetchPostsAuthorProfileImage(posts).then((posts) => {
+            //console.log("???", posts);
+            this.setState({
+              fetchedPosts: this.state.fetchedPosts.concat(posts),
+            });
+            this.pushToShownPosts();
           });
-          this.pushToShownPosts();
         }
       });
     } else {
@@ -193,6 +233,7 @@ class PostsHomeSection extends Component {
             id: this.state.fetchedPosts[i].author_user_id,
             firstName: this.state.fetchedPosts[i].first_name,
             lastName: this.state.fetchedPosts[i].last_name,
+            profileImg: this.state.fetchedPosts[i].profileImg,
           }}
           postCounters={{
             reactionsCounter: this.state.fetchedPosts[i].reactions_counter,

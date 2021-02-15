@@ -7,12 +7,24 @@ import {
   DialogActions,
 } from "@material-ui/core";
 import generalFunctions from "../usable functions/general";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
 const Posting = (props) => {
   /*
   TODO :: Save the textarea if no posting or refreshing happened
   */
+
+  const postingAuthorProfileImgRef = useRef(null);
+
+  useEffect(() => {
+    if (
+      props.identity &&
+      props.identity.profileImg &&
+      postingAuthorProfileImgRef.current
+    ) {
+      postingAuthorProfileImgRef.current.src = props.identity.profileImg;
+    }
+  }, [props.identity, postingAuthorProfileImgRef, window.location.href]);
 
   const [openDialog, setOpenDialog] = useState(false);
   const [disablePosting, setDisablePosting] = useState(true);
@@ -50,10 +62,14 @@ const Posting = (props) => {
       });
   };
 
-  if (!props.isMyProfile) return null;
+  if (!props.isMyProfile && window.location.pathname == "/profile") return null;
   return (
     <div id="profile-posting-section" className="profile-posts-section">
       <div id="profile-posting-header">
+        <img
+          ref={postingAuthorProfileImgRef}
+          id="wanna-posting-author-profile-img"
+        ></img>
         <div
           id="profile-wanna-posting-textarea"
           onClick={handleOpenPostingDialog}

@@ -9,14 +9,6 @@ import Home from "./components/home";
 import MainBar from "./components/mainBar";
 import { useState, Component } from "react";
 
-import {
-  AppBar,
-  Toolbar,
-  IconButton,
-  Typography,
-  Button,
-} from "@material-ui/core";
-
 class App extends Component {
   constructor(props) {
     super(props);
@@ -26,6 +18,7 @@ class App extends Component {
     this.state = {
       identity: null,
       authChecked: false,
+      profileImg: null,
     };
   }
 
@@ -42,23 +35,43 @@ class App extends Component {
     this.setState({ identity: null });
   }
 
-  async componentDidMount() {
-    let res = await fetch("/about-auth", { method: "GET" });
-    res = await res.json();
+  componentDidMount() {
+    fetch("/about-auth", { method: "GET" })
+      .then((res) => {
+        return res.json();
+      })
+      .then((res) => {
+        if (res.auth) {
+          if (
+            window.location.pathname == "/login" ||
+            window.location.pathname == "/signup"
+          )
+            window.location.replace("/home");
+          this.setState({ identity: res.userData, authChecked: true });
 
-    if (res.auth) {
-      if (
-        window.location.pathname == "/login" ||
-        window.location.pathname == "/signup"
-      )
-        window.location.replace("/home");
-      this.setState({ identity: res.userData });
-    } else {
-      if (window.location.pathname == "/home")
-        window.location.replace("/login");
-    }
-
-    this.setState({ authChecked: true });
+          return fetch(
+            `/get-profile-img/${res.userData.id}?` +
+              new URLSearchParams({
+                profile_photo_path: res.userData.profile_photo_path,
+              })
+          );
+        } else {
+          if (window.location.pathname == "/home")
+            window.location.replace("/login");
+          this.setState({ authChecked: true });
+        }
+      })
+      .then((res) => {
+        if (res && res.ok) return res.blob();
+      })
+      .then((res) => {
+        if (res) {
+          const img = URL.createObjectURL(res);
+          this.setState({
+            identity: { ...this.state.identity, profileImg: img },
+          });
+        }
+      });
   }
 
   render() {
@@ -66,7 +79,6 @@ class App extends Component {
       return (
         <Router>
           <MainBar logout={this.handleLogout} identity={this.state.identity} />
-
           <Switch>
             <Route
               path="/login"

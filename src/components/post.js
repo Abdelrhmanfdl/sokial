@@ -1,7 +1,7 @@
 import { TextField, TextareaAutosize, Grid, Button } from "@material-ui/core";
 import PostCommentsSections from "./postCommentsSection";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import PostEditing from "./postEditing";
 
 /*
@@ -23,6 +23,21 @@ const Post = (props) => {
   const [editingPost, setEditingPost] = useState(false);
 
   const postContentRef = useRef(null);
+  const authorProfileImgRef = useRef(null);
+
+  useEffect(() => {
+    if (
+      authorProfileImgRef.current &&
+      props.postOwnerData &&
+      props.postOwnerData.profileImg
+    ) {
+      authorProfileImgRef.current.src = props.postOwnerData.profileImg;
+    }
+  }, [
+    authorProfileImgRef,
+    props.postOwnerData.profileImg,
+    window.location.href,
+  ]);
 
   const handleClickDeletePost = () => {
     props.handleDeletePost(props.postIndex);
@@ -49,7 +64,7 @@ const Post = (props) => {
       <div className="post">
         <div className="post-header">
           <div className="post-identity-container">
-            <div className="post-profile-photo" />
+            <img className="post-profile-photo" ref={authorProfileImgRef} />
             <small
               style={{ fontWeight: "bold" }}
             >{`${props.postOwnerData.firstName} ${props.postOwnerData.lastName}`}</small>

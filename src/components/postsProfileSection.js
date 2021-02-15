@@ -56,6 +56,7 @@ class PostsProfileSection extends Component {
           id: this.props.profileId,
           firstName: this.props.profileData.firstName,
           lastName: this.props.profileData.lastName,
+          profileImg: this.props.profileData.profileImg,
         }}
         postCounters={{
           reactionsCounter: this.state.fetchedPosts[postIndex]
@@ -103,6 +104,7 @@ class PostsProfileSection extends Component {
           id: this.props.profileId,
           firstName: this.props.profileData.firstName,
           lastName: this.props.profileData.lastName,
+          profileImg: this.props.profileData.profileImg,
         }}
         postCounters={{
           reactionsCounter: this.state.fetchedPosts[postIndex]
@@ -183,8 +185,7 @@ class PostsProfileSection extends Component {
     );
 
     for (let i = toPushLeft; i < toPushRight; i++) {
-      //console.log(this.state.fetchedPosts[i]);
-
+      if (i == 0) console.log("aaa", this.state.fetchedPosts[i]);
       tmpPostsDivs.push(
         <Post
           id={this.state.fetchedPosts[i].id}
@@ -193,6 +194,7 @@ class PostsProfileSection extends Component {
             id: this.props.profileId,
             firstName: this.props.profileData.firstName,
             lastName: this.props.profileData.lastName,
+            profileImg: this.props.profileData.profileImg,
           }}
           postCounters={{
             reactionsCounter: this.state.fetchedPosts[i].reactions_counter,

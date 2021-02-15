@@ -23,30 +23,11 @@ const ProfileImg = (props) => {
   const uploadedImgRef = useRef(null);
 
   useEffect(() => {
-    // As componentdidmount
-    if (props.profileData.profile_photo_path)
-      fetch(
-        `/get-profile-img/${props.profileData.id}?` +
-          new URLSearchParams({
-            profile_photo_path: props.profileData.profile_photo_path,
-          })
-      )
-        .then((res) => {
-          return res.blob();
-        })
-        .then((blob) => {
-          console.log(blob);
-          setFetchedImage({ isFetched: true, img: blob });
-        })
-        .catch((err) => {});
-  }, [props.profileData]);
-
-  useEffect(() => {
-    if (fetchedImage.isFetched && uploadedImgRef) {
-      const src = URL.createObjectURL(fetchedImage.img);
-      uploadedImgRef.current.src = src;
+    console.log("qqqq", props.profileData.profileImg);
+    if (uploadedImgRef.current) {
+      uploadedImgRef.current.src = props.profileData.profileImg || " ";
     }
-  }, [fetchedImage, uploadedImgRef]);
+  }, [props.profileData.profileImg, uploadedImgRef, window.location.href]);
 
   const handleSelectImg = (img) => {
     // This is used when the user select an img, then he needs to confirm it or cancel.

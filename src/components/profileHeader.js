@@ -1,11 +1,4 @@
-import { useRef } from "react";
-import {
-  TextField,
-  TextareaAutosize,
-  Grid,
-  Button,
-  IconButton,
-} from "@material-ui/core";
+import { Button } from "@material-ui/core";
 import ProfileImg from "./profileImg";
 import AddCircleIcon from "@material-ui/icons/AddCircle";
 import RemoveCircleIcon from "@material-ui/icons/RemoveCircle";
@@ -69,7 +62,6 @@ const ProfileHeader = (props) => {
       <ProfileImg
         profileData={props.profileData}
         isMyProfile={props.isMyProfile}
-        profileData={props.profileData}
       />
 
       <div id="profile-name-container">{`${props.profileData.firstName} ${props.profileData.lastName}`}</div>
