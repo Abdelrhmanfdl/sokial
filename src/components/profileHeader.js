@@ -45,15 +45,31 @@ const ProfileHeader = (props) => {
       Unrequest friendship
     </Button>
   ) : (
-    <Button
-      {...friendshipButtonsAttr}
-      startIcon={<CheckCircleIcon />}
-      onClick={() => {
-        friendshipRelatedFunctions.handleAcceptFriendship(props.profileData.id);
-      }}
-    >
-      Accept friendship
-    </Button>
+    <div style={{ display: "flex", flexDirection: "row" }}>
+      <Button
+        {...friendshipButtonsAttr}
+        startIcon={<CheckCircleIcon />}
+        onClick={() => {
+          friendshipRelatedFunctions.handleAcceptFriendship(
+            props.profileData.id
+          );
+        }}
+      >
+        Accept friendship
+      </Button>
+
+      <Button
+        {...friendshipButtonsAttr}
+        startIcon={<CancelIcon color={"secondary"} />}
+        onClick={() => {
+          friendshipRelatedFunctions.handleRejectFriendship(
+            props.profileData.id
+          );
+        }}
+      >
+        Reject friendship
+      </Button>
+    </div>
   );
 
   return (

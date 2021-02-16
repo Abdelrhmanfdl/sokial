@@ -6,9 +6,13 @@ const FriendshipNotifEntry = (props) => {
     <Grid direction="row" className="friendship-notif-entry" container>
       <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
         <div class="friendship-notif-img"></div>
-        <div class="friendship-notif-name" style={{ marginLeft: "4px" }}>
+        <a
+          class="clickable-account-name friendship-notif-name"
+          href={`${window.location.origin}/profile?id=${props.id}`}
+          style={{ marginLeft: "4px" }}
+        >
           {props.fullName}
-        </div>
+        </a>
       </Grid>
       <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
         <ButtonGroup

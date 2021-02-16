@@ -37,11 +37,18 @@ const PostComment = (props) => {
 
   return (
     <div className="post-comment">
-      <img ref={authorProfileImgRef} className="comment-author-img"></img>
+      <a
+        href={`${window.location.origin}/profile?id=${props.commentAuthor.id}`}
+      >
+        <img ref={authorProfileImgRef} className="comment-author-img"></img>
+      </a>
       <div style={{ width: "100%" }}>
-        <div className="comment-author-name">
+        <a
+          className="clickable-account-name comment-author-name"
+          href={`${window.location.origin}/profile?id=${props.commentAuthor.id}`}
+        >
           {`${props.commentAuthor.first_name} ${props.commentAuthor.last_name}`}
-        </div>
+        </a>
 
         {props.commentAuthor.id === props.identity.id ? (
           <div className="comment-more-div">

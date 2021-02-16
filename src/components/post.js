@@ -64,10 +64,16 @@ const Post = (props) => {
       <div className="post">
         <div className="post-header">
           <div className="post-identity-container">
-            <img className="post-profile-photo" ref={authorProfileImgRef} />
-            <small
-              style={{ fontWeight: "bold" }}
-            >{`${props.postOwnerData.firstName} ${props.postOwnerData.lastName}`}</small>
+            <a
+              href={`${window.location.origin}/profile?id=${props.postOwnerData.id}`}
+            >
+              <img className="post-profile-photo" ref={authorProfileImgRef} />
+            </a>
+
+            <a
+              className="clickable-account-name"
+              href={`${window.location.origin}/profile?id=${props.postOwnerData.id}`}
+            >{`${props.postOwnerData.firstName} ${props.postOwnerData.lastName}`}</a>
 
             {props.identity.id == props.postOwnerData.id ? (
               <div className="post-more-div">

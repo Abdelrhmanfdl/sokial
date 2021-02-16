@@ -16,3 +16,12 @@ body {
   margin-top: 64px;
   background-color: $bg-main;
 }
+
+.clickable-account-name {
+  text-decoration: none;
+  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
+    "Lucida Sans", Arial, sans-serif;
+  color: black;
+  font-weight: bold;
+  height: 0px;
+}
