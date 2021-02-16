@@ -185,7 +185,6 @@ class PostsProfileSection extends Component {
     );
 
     for (let i = toPushLeft; i < toPushRight; i++) {
-      if (i == 0) console.log("aaa", this.state.fetchedPosts[i]);
       tmpPostsDivs.push(
         <Post
           id={this.state.fetchedPosts[i].id}

@@ -33,6 +33,9 @@ class PostCommentsSections extends Component {
     this.handleWaitingForComments = this.handleWaitingForComments.bind(this);
     this.handleEditComment = this.handleEditComment.bind(this);
     this.handleDeleteComment = this.handleDeleteComment.bind(this);
+    this.fetchingAuthorsProfileImgs = this.fetchingAuthorsProfileImgs.bind(
+      this
+    );
   }
 
   handleSendComment() {
@@ -73,7 +76,12 @@ class PostCommentsSections extends Component {
         id={this.state.fetchedComments[commentIndex].id}
         commentIndex={commentIndex}
         content={newContent}
-        commentAuthor={this.state.fetchedComments[commentIndex].author_user}
+        c
+        commentAuthor={{
+          ...this.state.fetchedComments[commentIndex].author_user,
+          authorProfileImg: this.state.fetchedComments[commentIndex]
+            .authorProfileImg,
+        }}
         postOwnerData={this.props.postOwnerData}
         identity={this.props.identity}
         handleEditComment={this.handleEditComment}
@@ -98,22 +106,6 @@ class PostCommentsSections extends Component {
     tmpCommentsDivs[commentIndex] = null;
     this.setState({ shownCommentsDivs: tmpCommentsDivs });
   }
-
-  /*  toggleReaction(postIndex, newReactionType) {
-    let tmpCommentsDivs = [...this.state.shownCommentsDivs];
-    tmpCommentsDivs[postIndex] = (
-      <Post
-        id={this.state.fetchedComments[postIndex].id}
-        postIndex={postIndex}
-        myReactionType={newReactionType}
-        content={this.state.fetchedComments[postIndex].content}
-        autherFullName={`${this.props.profileData.firstName} ${this.props.profileData.lastName}`}
-        toggleReaction={this.toggleReaction}
-      />
-    );
-    this.setState({ shownCommentsDivs: tmpCommentsDivs });
-  }
-*/
 
   handleWaitingForComments() {
     this.setState({ waitingForComments: true });
@@ -163,7 +155,6 @@ class PostCommentsSections extends Component {
           if (!res.valid) {
             // TODO :: Handle invalid fetch
           } else {
-            // console.log(res.comments.length);
             return resolve(res.comments);
           }
         });
@@ -180,13 +171,16 @@ class PostCommentsSections extends Component {
     );
 
     for (let i = toPushLeft; i < toPushRight; i++) {
-      console.log(this.state.fetchedComments[i].author_user);
+      //console.log(this.state.fetchedComments[i].author_user);
       tmpCommentsDivs.push(
         <PostComment
           id={this.state.fetchedComments[i].id}
           commentIndex={tmpCommentsDivs.length}
           content={this.state.fetchedComments[i].content}
-          commentAuthor={this.state.fetchedComments[i].author_user}
+          commentAuthor={{
+            ...this.state.fetchedComments[i].author_user,
+            authorProfileImg: this.state.fetchedComments[i].authorProfileImg,
+          }}
           postOwnerData={this.props.postOwnerData}
           identity={this.props.identity}
           handleEditComment={this.handleEditComment}
@@ -199,6 +193,82 @@ class PostCommentsSections extends Component {
       shownCommentsDivs: this.state.shownCommentsDivs.concat(tmpCommentsDivs),
       firstFetchDone: true,
     });
+  }
+
+  fetchingAuthorsProfileImgs(comments) {
+    return new Promise((resolve, reject) => {
+      const allFetchPromises = [];
+      for (let i = 0; i < comments.length; i++) {
+        allFetchPromises.push(
+          fetch(
+            `/get-profile-img/${comments[i].author_user.id}?` +
+              new URLSearchParams({
+                profile_photo_path: comments[i].author_user.profile_photo_path,
+              })
+          )
+        );
+      }
+      let fetchesPromise = Promise.all(allFetchPromises);
+      fetchesPromise
+        .then((fetches) => {
+          let blobsPromises = [];
+          for (let i = 0; i < comments.length; i++) {
+            if (fetches[i].ok) blobsPromises.push(fetches[i].blob());
+            else blobsPromises.push(null);
+          }
+          return Promise.all(blobsPromises);
+        })
+        .then((imgs) => {
+          for (let i = 0; i < comments.length; i++) {
+            if (imgs[i]) imgs[i] = URL.createObjectURL(imgs[i]);
+          }
+          return resolve(imgs);
+        });
+    });
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (
+      prevState.shownCommentsDivs &&
+      prevState.shownCommentsDivs.length !== this.state.shownCommentsDivs.length
+    ) {
+      // Fetch authors profile imgs
+      let left = prevState.shownCommentsDivs.length;
+      let right = Math.min(
+        left + this.numCommentsToPush,
+        this.state.shownCommentsDivs.length
+      );
+
+      this.fetchingAuthorsProfileImgs(
+        this.state.fetchedComments.slice(left)
+      ).then((result) => {
+        let tmpArr = [...this.state.shownCommentsDivs];
+        for (let i = left; i < right; i++) {
+          tmpArr[i] = (
+            <PostComment
+              id={this.state.fetchedComments[i].id}
+              commentIndex={i}
+              content={this.state.fetchedComments[i].content}
+              commentAuthor={{
+                ...this.state.fetchedComments[i].author_user,
+                authorProfileImg: result[i - left],
+              }}
+              postOwnerData={this.props.postOwnerData}
+              identity={this.props.identity}
+              handleEditComment={this.handleEditComment}
+              handleDeleteComment={this.handleDeleteComment}
+            />
+          );
+        }
+        this.setState({ shownCommentsDivs: tmpArr });
+
+        tmpArr = [...this.state.fetchedComments];
+        for (let i = left; i < right; i++) {
+          tmpArr[i].authorProfileImg = result[i - left];
+        }
+        this.setState({ fetchedComments: tmpArr });
+      });
+    }
   }
 
   componentDidMount() {

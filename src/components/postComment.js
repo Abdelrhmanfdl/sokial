@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { TextareaAutosize, Button, ButtonGroup } from "@material-ui/core";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 
@@ -6,6 +6,17 @@ const PostComment = (props) => {
   const [openMore, setOpenMore] = useState(false);
   const [editing, setEditing] = useState(false);
   const editingAreaRef = useRef(null);
+  const authorProfileImgRef = useRef(null);
+
+  useEffect(() => {
+    if (
+      authorProfileImgRef &&
+      authorProfileImgRef.current &&
+      props.commentAuthor.authorProfileImg
+    ) {
+      authorProfileImgRef.current.src = props.commentAuthor.authorProfileImg;
+    }
+  }, [authorProfileImgRef, props.commentAuthor.authorProfileImg]);
 
   const handleClickEditComment = () => {
     setEditing(true);
@@ -26,7 +37,7 @@ const PostComment = (props) => {
 
   return (
     <div className="post-comment">
-      <div className="comment-author-img"></div>
+      <img ref={authorProfileImgRef} className="comment-author-img"></img>
       <div style={{ width: "100%" }}>
         <div className="comment-author-name">
           {`${props.commentAuthor.first_name} ${props.commentAuthor.last_name}`}
