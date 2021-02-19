@@ -1,8 +1,12 @@
-import { TextField, TextareaAutosize, Grid, Button } from "@material-ui/core";
+import { MenuItem, Menu, Grid, Button } from "@material-ui/core";
 import PostCommentsSections from "./postCommentsSection";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import { useState, useRef, useEffect } from "react";
 import PostEditing from "./postEditing";
+import ThumbUpAltIcon from "@material-ui/icons/ThumbUpAlt";
+import ThumbUpOutlinedIcon from "@material-ui/icons/ThumbUpOutlined";
+import CommentOutlinedIcon from "@material-ui/icons/CommentOutlined";
+import { set } from "date-fns";
 
 /*
 Props: 
@@ -10,7 +14,7 @@ Props:
 - postIndex
 - postOwnerData
 - myReactionType
-- content
+,- content
 - identity
 - toggleReaction
 - handleDeletePost
@@ -19,11 +23,24 @@ Props:
 
 const Post = (props) => {
   const [openCommentsSection, setOpenCommentsSection] = useState(false);
-  const [openMore, setOpenMore] = useState(false);
+  const [menuAnchorElem, setMenuAnchorElem] = useState(null);
   const [editingPost, setEditingPost] = useState(false);
 
   const postContentRef = useRef(null);
   const authorProfileImgRef = useRef(null);
+  const isMoreOptionsOpen = menuAnchorElem !== null;
+
+  const handleOpenMoreOptions = (event) => {
+    setMenuAnchorElem(event.target);
+  };
+
+  const handleCloseMoreOptions = (event) => {
+    setMenuAnchorElem(null);
+  };
+
+  const handleToggleCommentsSection = () => {
+    setOpenCommentsSection(!openCommentsSection);
+  };
 
   useEffect(() => {
     if (
@@ -41,11 +58,11 @@ const Post = (props) => {
 
   const handleClickDeletePost = () => {
     props.handleDeletePost(props.postIndex);
-    setOpenMore(false);
+    handleCloseMoreOptions(false);
   };
   const handleClickEditPost = () => {
     setEditingPost(true);
-    setOpenMore(false);
+    handleCloseMoreOptions(false);
   };
 
   const handleToggleLike = () => {
@@ -77,32 +94,23 @@ const Post = (props) => {
 
             {props.identity.id == props.postOwnerData.id ? (
               <div className="post-more-div">
+                <Menu
+                  open={isMoreOptionsOpen}
+                  anchorEl={menuAnchorElem}
+                  onClose={handleCloseMoreOptions}
+                  keepMounted
+                >
+                  <MenuItem onClick={handleClickEditPost}> Edit</MenuItem>
+                  <MenuItem onClick={handleClickDeletePost}> Delete </MenuItem>
+                </Menu>
+
                 <Button
                   id="post-more-btn"
                   disableRipple
-                  //disabled={editing}
                   style={{ backgroundColor: "transparent" }}
                   startIcon={<MoreVertIcon />}
-                  onClick={() => {
-                    setOpenMore(!openMore);
-                  }}
+                  onClick={handleOpenMoreOptions}
                 />
-                {openMore ? (
-                  <div className="post-more-options">
-                    <div
-                      className="post-more-edit"
-                      onClick={handleClickEditPost}
-                    >
-                      Edit
-                    </div>
-                    <div
-                      className="post-more-delete"
-                      onClick={handleClickDeletePost}
-                    >
-                      Delete
-                    </div>
-                  </div>
-                ) : null}
               </div>
             ) : null}
           </div>
@@ -113,25 +121,46 @@ const Post = (props) => {
         </div>
         <div className="post-footer">
           <div className="post-counters">
-            <div className="post-like-counter">
+            <div
+              className="post-reaction-counter"
+              hidden={props.postCounters.reactionsCounter == 0}
+            >
+              <ThumbUpAltIcon
+                style={{
+                  height: "18px",
+                  position: "relative",
+                  bottom: "-5px",
+                }}
+                color={"primary"}
+              />
               {props.postCounters.reactionsCounter} Likes
             </div>
-            <div className="post-comment-counter">
+            <div
+              className="post-comment-counter"
+              hidden={props.postCounters.commentsCounter == 0}
+              onClick={handleToggleCommentsSection}
+            >
               {props.postCounters.commentsCounter} Comments
             </div>
           </div>
           <div className="post-btns">
             <Button
               onClick={handleToggleLike}
-              color={props.myReactionType ? "secondary" : "default"}
-              variant={props.myReactionType ? "contained" : "default"}
+              color={props.myReactionType ? "primary" : "inherit"}
+              startIcon={
+                props.myReactionType ? (
+                  <ThumbUpAltIcon color={"primary"} />
+                ) : (
+                  <ThumbUpOutlinedIcon color={"inherit"} />
+                )
+              }
             >
               Like
             </Button>
             <Button
-              onClick={() => {
-                setOpenCommentsSection(!openCommentsSection);
-              }}
+              onClick={handleToggleCommentsSection}
+              color={"inherit"}
+              startIcon={<CommentOutlinedIcon color="inherit" />}
             >
               Comment
             </Button>

@@ -1,5 +1,57 @@
 @import "variables";
 
+#profile-header-div {
+  width: 100%;
+  background-color: rgb(255, 255, 255);
+}
+
+#profile-cover-container {
+  margin: 0px auto 0px auto;
+  width: 70%;
+  height: 310px;
+  border-radius: 0px 0px 10px 10px;
+  background: radial-gradient(
+    circle,
+    rgb(157, 152, 255) 5%,
+    rgb(199, 199, 250) 35%,
+    rgb(255, 255, 255) 100%
+  );
+}
+
+#profile-img-container {
+  margin: -120px auto 0px auto;
+  width: $profile-img-rad;
+  height: $profile-img-rad;
+}
+
+#profile-img-frame {
+  width: inherit;
+  height: inherit;
+  background-color: transparent;
+  border-width: 2px;
+  //border: solid rgb(228, 228, 228);
+  border-radius: 50%;
+}
+
+#profile-name-container {
+  width: 70%;
+  margin: 20px auto 0px auto;
+  text-align: center;
+  font-weight: bold;
+  font-size: 25px;
+}
+
+#profile-header-options-container {
+  width: 60%;
+  margin: 40px auto 0px auto;
+  display: flex;
+  justify-content: flex-start;
+  border-top: 1px solid rgba(82, 82, 82, 0.3);
+  Button {
+    height: 50px;
+  }
+}
+
 #profile-friendship-buttons-div {
   width: max-content;
   margin: 10px auto 0 auto;
@@ -42,4 +94,11 @@
   border-radius: 50%;
   right: 50px;
   top: 140px;
+}
+
+@media only screen and (max-width: 768px) {
+  #profile-header-options-container,
+  #profile-cover-container {
+    width: 95%;
+  }
 }

@@ -1,12 +1,19 @@
 import { useState, useRef, useEffect } from "react";
-import { TextareaAutosize, Button, ButtonGroup } from "@material-ui/core";
+import {
+  MenuItem,
+  Menu,
+  TextareaAutosize,
+  Button,
+  ButtonGroup,
+} from "@material-ui/core";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 
 const PostComment = (props) => {
-  const [openMore, setOpenMore] = useState(false);
+  const [menuAnchorElem, setMenuAnchorElem] = useState(null);
   const [editing, setEditing] = useState(false);
   const editingAreaRef = useRef(null);
   const authorProfileImgRef = useRef(null);
+  const isMoreOptionsOpen = menuAnchorElem !== null;
 
   useEffect(() => {
     if (
@@ -18,21 +25,29 @@ const PostComment = (props) => {
     }
   }, [authorProfileImgRef, props.commentAuthor.authorProfileImg]);
 
+  const handleOpenMoreOptions = (event) => {
+    setMenuAnchorElem(event.target);
+  };
+
+  const handleCloseMoreOptions = () => {
+    setMenuAnchorElem(null);
+  };
+
   const handleClickEditComment = () => {
     setEditing(true);
-    setOpenMore(false);
+    handleCloseMoreOptions();
   };
 
   const handleSaveEdit = () => {
     props.handleEditComment(props.commentIndex, editingAreaRef.current.value);
     setEditing(false);
-    setOpenMore(false);
+    handleCloseMoreOptions();
   };
 
   const handleDeleteComment = () => {
     props.handleDeleteComment(props.commentIndex);
     setEditing(false);
-    setOpenMore(false);
+    handleCloseMoreOptions();
   };
 
   return (
@@ -42,47 +57,13 @@ const PostComment = (props) => {
       >
         <img ref={authorProfileImgRef} className="comment-author-img"></img>
       </a>
-      <div style={{ width: "100%" }}>
+      <div className="comment-right-col">
         <a
           className="clickable-account-name comment-author-name"
           href={`${window.location.origin}/profile?id=${props.commentAuthor.id}`}
         >
           {`${props.commentAuthor.first_name} ${props.commentAuthor.last_name}`}
         </a>
-
-        {props.commentAuthor.id === props.identity.id ? (
-          <div className="comment-more-div">
-            {!editing ? (
-              <Button
-                id="comment-more-btn"
-                disableRipple
-                disabled={editing}
-                style={{ backgroundColor: "transparent" }}
-                startIcon={<MoreVertIcon />}
-                onClick={() => {
-                  setOpenMore(!openMore);
-                }}
-              />
-            ) : null}
-
-            {openMore ? (
-              <div className="comment-more-options">
-                <div
-                  className="comment-more-edit"
-                  onClick={handleClickEditComment}
-                >
-                  Edit
-                </div>
-                <div
-                  className="comment-more-delete"
-                  onClick={handleDeleteComment}
-                >
-                  Delete
-                </div>
-              </div>
-            ) : null}
-          </div>
-        ) : null}
 
         <div className="comment-content">
           {!editing ? (
@@ -127,6 +108,29 @@ const PostComment = (props) => {
           )}
         </div>
       </div>
+      {props.commentAuthor.id === props.identity.id ? (
+        <div className="comment-more-div">
+          {!editing ? (
+            <Button
+              id="comment-more-btn"
+              // disableRipple
+              disabled={editing}
+              style={{ backgroundColor: "transparent" }}
+              startIcon={<MoreVertIcon />}
+              onClick={handleOpenMoreOptions}
+            />
+          ) : null}
+
+          <Menu
+            anchorEl={menuAnchorElem}
+            open={isMoreOptionsOpen}
+            onClose={handleCloseMoreOptions}
+          >
+            <MenuItem onClick={handleClickEditComment}>Edit</MenuItem>
+            <MenuItem onClick={handleDeleteComment}>Delete</MenuItem>
+          </Menu>
+        </div>
+      ) : null}
     </div>
   );
 };

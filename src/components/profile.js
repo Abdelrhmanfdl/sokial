@@ -2,11 +2,14 @@ import { TextField, TextareaAutosize, Grid, Button } from "@material-ui/core";
 import ProfileHeader from "./profileHeader";
 import Posting from "./posting";
 import PostsProfileSection from "./postsProfileSection";
+import ProfilePostsOption from "./profilePostsOption";
+import ProfileFriendsOption from "./profileFriendsOption";
 import { useState, useEffect } from "react";
 
 const Profile = (props) => {
   const [profileData, setProfileData] = useState(null);
   const [friendshipRel, setFriendshipRel] = useState(null);
+  const [profileChosenOption, setProfileChosenOption] = useState("posts");
 
   // Get the userId in the path (want to get this profile)
   const params = new URLSearchParams(window.location.search);
@@ -67,8 +70,9 @@ const Profile = (props) => {
   if (profileData === null || (!isMyProfile && !friendshipRel)) return null;
   else
     return (
-      <div id="profile">
+      <div>
         <ProfileHeader
+          setProfileChosenOption={setProfileChosenOption}
           profileData={profileData}
           isMyProfile={isMyProfile}
           areFriends={isMyProfile ? undefined : friendshipRel.areFriends}
@@ -83,50 +87,19 @@ const Profile = (props) => {
               : friendshipRel.friendshipReqSenderId === props.identity.id
           }
         />
-        <Grid
-          id="profile-two-colums"
-          direction="row"
-          justify={"space-evenly"}
-          container
-        >
-          <Grid id="profile-left-column" item sm={4} xs={12}>
-            <div
-              id="profile-posts-about-section"
-              className="profile-posts-section"
-              item
-            >
-              About
-            </div>
-            <div
-              id="profile-posts-photos-section"
-              className="profile-posts-section"
-              item
-            >
-              Photos
-            </div>
-            <div
-              id="profile-posts-friends-section"
-              className="profile-posts-section"
-              item
-            >
-              Friends
-            </div>
-          </Grid>
-
-          <Grid id="profile-right-column" item sm={5} lg={5} xs={12}>
-            <Posting
-              identity={props.identity}
-              isMyProfile={isMyProfile}
-              profileData={profileData}
-            />
-            <PostsProfileSection
-              identity={props.identity}
-              isMyProfile={isMyProfile}
-              profileId={params.get("id")}
-              profileData={profileData}
-            />
-          </Grid>
-        </Grid>
+        {profileChosenOption == "posts" ? (
+          <ProfilePostsOption
+            identity={props.identity}
+            isMyProfile={isMyProfile}
+            profileData={profileData}
+          />
+        ) : profileChosenOption == "friends" ? (
+          <ProfileFriendsOption
+            identity={props.identity}
+            isMyProfile={isMyProfile}
+            profileData={profileData}
+          />
+        ) : null}
       </div>
     );
 };

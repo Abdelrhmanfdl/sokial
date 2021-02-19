@@ -2,6 +2,7 @@ $bg-main: #f2f3f5;
 
 $primary-color: rgb(40, 50, 75);
 $profile-img-rad: 180px;
+$profile-friend-entry-img-rad: 60px;
 
 $post-profile-photo-rad: 45px;
 
@@ -15,3 +16,15 @@ $comment-profile-img-size: 40px;
 $wanna-posting-author-profile-img-rad: 50px;
 
 $profile-img-border-color: solid rgb(228, 228, 228);
+$post-comment-bg: rgb(240, 242, 245);
+
+$post-footer-main-font-color: rgb(101, 103, 107);
+
+@mixin profile-section {
+  border-radius: 8px;
+  background-color: white;
+  min-height: 40px;
+  margin-bottom: 10px;
+
+  box-shadow: 0px 0px 1px -0.7px black, 0px 1px 2px -1.5px black;
+}

@@ -303,6 +303,7 @@ class PostCommentsSections extends Component {
           <div className="post-comments-section">
             <div class="post-commenting-section">
               <TextareaAutosize
+                autoFocus
                 rowsMin={2}
                 rowsMax={8}
                 ref={this.textareaRef}
@@ -311,8 +312,8 @@ class PostCommentsSections extends Component {
                   resize: "none",
                   overflow: "auto",
                   outlineStyle: "none",
-                  //borderStyle: "none",
                   borderRadius: "5px",
+                  fontSize: "large",
                 }}
               />
               <div style={{ width: "10%", position: "relative" }}>

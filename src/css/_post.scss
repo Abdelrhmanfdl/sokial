@@ -59,15 +59,15 @@
 
 .post-footer {
   width: 100%;
-  border-top: $post-inner-border;
+  //border-top: $post-inner-border;
 
   display: flex;
-  flex-direction: row-reverse;
+  flex-direction: column;
   Button {
     width: 100%;
   }
 
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 }
 
 .post-more-div {
@@ -102,27 +102,38 @@
 }
 
 .post-btns {
+  border-top: $post-inner-border;
   min-width: 300px;
   display: flex;
   flex-direction: row;
   flex-grow: 5;
+  color: $post-footer-main-font-color;
 }
 
 .post-counters {
+  display: inline-block;
   min-width: 250px;
-  display: flex;
   flex-direction: row;
-  //border-left: blueviolet solid 2px;
-  justify-content: space-evenly;
+  justify-content: space-between;
   flex-grow: 2;
   padding: 8px;
-  background-color: rgba(20, 20, 20, 0.26);
   div {
-    font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
-      "Lucida Sans", Arial, sans-serif;
-    //font-family: Verdana, Geneva, Tahoma, sans-serif;
+    //font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
+    //  "Lucida Sans", Arial, sans-serif;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
     //font-family: cursive;
-    font-weight: bold;
-    color: rgb(29, 29, 29);
+    font-weight: normal;
+    font-size: small;
+    color: $post-footer-main-font-color;
+  }
+
+  .post-comment-counter {
+    cursor: pointer;
+    float: right;
+  }
+
+  .post-reaction-counter {
+    cursor: pointer;
+    float: left;
   }
 }

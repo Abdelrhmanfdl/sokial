@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Button } from "@material-ui/core";
 import ProfileImg from "./profileImg";
 import AddCircleIcon from "@material-ui/icons/AddCircle";
@@ -83,15 +84,28 @@ const ProfileHeader = (props) => {
       <div id="profile-name-container">{`${props.profileData.firstName} ${props.profileData.lastName}`}</div>
       <div id="profile-friendship-buttons-div">{friendshipRelButton}</div>
       <div id="profile-header-options-container">
-        <Button id="profile-header-posts-option-btn" size="large">
+        <Button
+          id="profile-header-posts-option-btn"
+          size="large"
+          onClick={() => {
+            props.setProfileChosenOption("posts");
+          }}
+        >
           Posts
+        </Button>
+        <Button
+          id="profile-header-friends-option-btn"
+          size="large"
+          onClick={() => {
+            props.setProfileChosenOption("friends");
+          }}
+        >
+          Friends
         </Button>
         <Button id="profile-header-about-option-btn" size="large">
           About
         </Button>
-        <Button id="profile-header-friends-option-btn" size="large">
-          Friends
-        </Button>
+
         <Button id="profile-header-photos-option-btn" size="large">
           Photos
         </Button>
