@@ -4,7 +4,7 @@ import PostsProfileSection from "./postsProfileSection";
 import { useState, useEffect } from "react";
 
 const ProfilePostsOption = (props) => {
-  // document.body.onscroll = null;
+  document.body.onscroll = null;
   return (
     <Grid
       id="profile-two-colums"

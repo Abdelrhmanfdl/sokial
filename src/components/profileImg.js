@@ -12,6 +12,7 @@ import CancelIcon from "@material-ui/icons/Cancel";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
 import { friendshipRelatedFunctions } from "../usable functions/endpoint-related";
+import Avatar from "./../images/default_profile_image.png";
 
 const ProfileImg = (props) => {
   const [fetchedImage, setFetchedImage] = useState({
@@ -23,9 +24,11 @@ const ProfileImg = (props) => {
   const uploadedImgRef = useRef(null);
 
   useEffect(() => {
-    console.log("qqqq", props.profileData.profileImg);
-    if (uploadedImgRef.current) {
+    console.log(Avatar);
+    if (uploadedImgRef.current && props.profileData.profile_photo_path) {
       uploadedImgRef.current.src = props.profileData.profileImg || " ";
+    } else if (uploadedImgRef.current) {
+      uploadedImgRef.current.src = Avatar;
     }
   }, [props.profileData.profileImg, uploadedImgRef, window.location.href]);
 

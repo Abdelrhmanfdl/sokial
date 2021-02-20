@@ -8,6 +8,7 @@ import {
 } from "@material-ui/core";
 import generalFunctions from "../usable functions/general";
 import { useState, useRef, useEffect } from "react";
+import Avatar from "./../images/default_profile_image.png";
 
 const Posting = (props) => {
   /*
@@ -22,7 +23,9 @@ const Posting = (props) => {
       props.identity.profileImg &&
       postingAuthorProfileImgRef.current
     ) {
-      postingAuthorProfileImgRef.current.src = props.identity.profileImg;
+      postingAuthorProfileImgRef.current.src = props.identity.profileImg || " ";
+    } else if (postingAuthorProfileImgRef.current) {
+      postingAuthorProfileImgRef.current.src = Avatar;
     }
   }, [props.identity, postingAuthorProfileImgRef, window.location.href]);
 

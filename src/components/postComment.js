@@ -6,6 +6,7 @@ import {
   Button,
   ButtonGroup,
 } from "@material-ui/core";
+import Avatar from "./../images/default_profile_image.png";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 
 const PostComment = (props) => {
@@ -22,6 +23,8 @@ const PostComment = (props) => {
       props.commentAuthor.authorProfileImg
     ) {
       authorProfileImgRef.current.src = props.commentAuthor.authorProfileImg;
+    } else if (authorProfileImgRef.current) {
+      authorProfileImgRef.current.src = Avatar;
     }
   }, [authorProfileImgRef, props.commentAuthor.authorProfileImg]);
 
