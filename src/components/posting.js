@@ -10,7 +10,7 @@ import generalFunctions from "../usable functions/general";
 import { useState, useRef, useEffect } from "react";
 import Avatar from "./../images/default_profile_image.png";
 
-const Posting = (props) => {
+const Posting = ({ identity, isMyProfile, pushingNewPost }) => {
   /*
   TODO :: Save the textarea if no posting or refreshing happened
   */
@@ -18,16 +18,12 @@ const Posting = (props) => {
   const postingAuthorProfileImgRef = useRef(null);
 
   useEffect(() => {
-    if (
-      props.identity &&
-      props.identity.profileImg &&
-      postingAuthorProfileImgRef.current
-    ) {
-      postingAuthorProfileImgRef.current.src = props.identity.profileImg || " ";
+    if (identity && identity.profileImg && postingAuthorProfileImgRef.current) {
+      postingAuthorProfileImgRef.current.src = identity.profileImg || " ";
     } else if (postingAuthorProfileImgRef.current) {
       postingAuthorProfileImgRef.current.src = Avatar;
     }
-  }, [props.identity, postingAuthorProfileImgRef, window.location.href]);
+  }, [identity, postingAuthorProfileImgRef, window.location.href]);
 
   const [openDialog, setOpenDialog] = useState(false);
   const [disablePosting, setDisablePosting] = useState(true);
@@ -44,6 +40,7 @@ const Posting = (props) => {
   const handleClickPost = () => {
     setDisablePosting(true);
     setDisableWriting(true);
+
     fetch("/post", {
       method: "POST",
       headers: { "Content-type": "application/json; charset=UTF-8" },
@@ -57,6 +54,11 @@ const Posting = (props) => {
         if (!res.ok) throw new Error("Can't post.");
         setOpenDialog(false);
         setDisableWriting(false);
+        return res.json();
+      })
+      .then((res) => {
+        console.log(res);
+        pushingNewPost(textareaRef.current.value, res.postData);
       })
       .catch((res) => {
         /*
@@ -65,7 +67,7 @@ const Posting = (props) => {
       });
   };
 
-  if (!props.isMyProfile && window.location.pathname == "/profile") return null;
+  if (!isMyProfile && window.location.pathname == "/profile") return null;
   return (
     <div id="profile-posting-section" className="profile-posts-section">
       <div id="profile-posting-header">

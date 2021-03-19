@@ -2,6 +2,7 @@ import Post from "./post";
 import { Component } from "react";
 import { Button } from "@material-ui/core";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import Posting from "./posting";
 
 class PostsProfileSection extends Component {
   constructor(props) {
@@ -17,6 +18,7 @@ class PostsProfileSection extends Component {
 
     this.numPostsToFetch = 100; // It's a parameter that can be changed
     this.numPostsToPush = 15; // It's a parameter that can be changed
+    this.beforeDate = "9999-12-30"; // To avoid posts those are posted while i'm here
 
     // This variable is used to prevent making a fetch while
     // haven't get last sent fetch yet. (A problem of scrolling based fetching)
@@ -28,6 +30,61 @@ class PostsProfileSection extends Component {
     this.toggleReaction = this.toggleReaction.bind(this);
     this.handleDeletePost = this.handleDeletePost.bind(this);
     this.handleEditPost = this.handleEditPost.bind(this);
+    this.pushingNewPost = this.pushingNewPost.bind(this);
+    this.createPost = this.createPost.bind(this);
+  }
+
+  createPost(postData) {
+    return (
+      <Post
+        id={postData.id}
+        postIndex={postData.index}
+        myReactionType={postData.reactions[0]}
+        content={postData.content}
+        timestamp={postData.timestamp}
+        specificStyle={postData.specificStyle}
+        postOwnerData={{
+          ...this.props.profileData,
+        }}
+        postCounters={{
+          reactionsCounter: postData.reactions_counter,
+          commentsCounter: postData.comments_counter,
+        }}
+        identity={this.props.identity}
+        toggleReaction={this.toggleReaction}
+        handleDeletePost={this.handleDeletePost}
+        handleEditPost={this.handleEditPost}
+      />
+    );
+  }
+
+  pushingNewPost(content, postData) {
+    // Show the new post with some other features "temporary"
+
+    const tmpFetched = [...this.state.fetchedPosts];
+    tmpFetched.unshift({
+      id: postData.id,
+      content: content,
+      privacy: postData.privacy,
+      comments_counter: 0,
+      reactions: [],
+      reactions_counter: 0,
+      author_user_id: postData.author_user_id,
+      specificStyle: {
+        border: "1px #3f51b5 solid",
+        cursor: "progress",
+      },
+    });
+
+    this.setState({ fetchedPosts: tmpFetched }, function () {
+      const tmpPostsDivs = [];
+      this.state.fetchedPosts.map((post, idx) => {
+        tmpPostsDivs.push(
+          post !== null ? this.createPost({ ...post, index: idx }) : null
+        );
+      });
+      this.setState({ shownPostsDivs: tmpPostsDivs });
+    });
   }
 
   handleEditPost(postIndex, newContent) {
@@ -41,48 +98,45 @@ class PostsProfileSection extends Component {
     })
       .then((res) => {
         if (!res.ok) throw new Error("Error in editing the post");
+
+        let tmpFetchedPosts = [...this.state.fetchedPosts];
+        tmpFetchedPosts[postIndex].content = newContent;
+
+        let tmpPostsDivs = [...this.state.shownPostsDivs];
+
+        // Objects in components are read-only objects
+        tmpPostsDivs[postIndex] = {
+          ...tmpPostsDivs[postIndex],
+          props: { ...tmpPostsDivs[postIndex].props },
+        };
+        tmpPostsDivs[postIndex].props.content = newContent;
+
+        this.setState({
+          shownPostsDivs: tmpPostsDivs,
+          fetchedPosts: tmpFetchedPosts,
+        });
       })
-      .catch((res) => {});
-
-    let tmpPostsDivs = [...this.state.shownPostsDivs];
-
-    tmpPostsDivs[postIndex] = (
-      <Post
-        id={this.state.fetchedPosts[postIndex].id}
-        postIndex={postIndex}
-        myReactionType={this.state.fetchedPosts[postIndex].reactions[0]}
-        content={newContent}
-        postOwnerData={{
-          id: this.props.profileId,
-          firstName: this.props.profileData.firstName,
-          lastName: this.props.profileData.lastName,
-          profileImg: this.props.profileData.profileImg,
-        }}
-        postCounters={{
-          reactionsCounter: this.state.fetchedPosts[postIndex]
-            .reactions_counter,
-          commentsCounter: this.state.fetchedPosts[postIndex].comments_counter,
-        }}
-        identity={this.props.identity}
-        toggleReaction={this.toggleReaction}
-        handleDeletePost={this.handleDeletePost}
-        handleEditPost={this.handleEditPost}
-      />
-    );
-    this.setState({ shownPostsDivs: tmpPostsDivs });
+      .catch((err) => {
+        console.log(err.message);
+      });
   }
 
   handleDeletePost(postIndex) {
     fetch(`/post/${this.state.fetchedPosts[postIndex].id}`, {
       method: "DELETE",
     })
-      .then((res) => {})
+      .then((res) => {
+        if (!res.ok) throw new Error("Can't delete this post");
+        let tmpPostsDivs = [...this.state.shownPostsDivs];
+        let tmpFetchedPosts = [...this.state.fetchedPosts];
+        tmpPostsDivs[postIndex] = null;
+        tmpFetchedPosts[postIndex] = null;
+        this.setState({
+          shownPostsDivs: tmpPostsDivs,
+          fetchedPosts: tmpFetchedPosts,
+        });
+      })
       .catch((err) => {});
-
-    let tmpPostsDivs = [...this.state.shownPostsDivs];
-
-    tmpPostsDivs[postIndex] = null;
-    this.setState({ shownPostsDivs: tmpPostsDivs });
   }
 
   toggleReaction(postIndex, newReactionType) {
@@ -93,30 +147,14 @@ class PostsProfileSection extends Component {
     */
 
     let tmpPostsDivs = [...this.state.shownPostsDivs];
+    tmpPostsDivs[postIndex] = {
+      ...tmpPostsDivs[postIndex],
+      props: {
+        ...tmpPostsDivs[postIndex].props,
+        myReactionType: newReactionType,
+      },
+    };
 
-    tmpPostsDivs[postIndex] = (
-      <Post
-        id={this.state.fetchedPosts[postIndex].id}
-        postIndex={postIndex}
-        myReactionType={newReactionType}
-        content={this.state.fetchedPosts[postIndex].content}
-        postOwnerData={{
-          id: this.props.profileId,
-          firstName: this.props.profileData.firstName,
-          lastName: this.props.profileData.lastName,
-          profileImg: this.props.profileData.profileImg,
-        }}
-        postCounters={{
-          reactionsCounter: this.state.fetchedPosts[postIndex]
-            .reactions_counter,
-          commentsCounter: this.state.fetchedPosts[postIndex].comments_counter,
-        }}
-        identity={this.props.identity}
-        toggleReaction={this.toggleReaction}
-        handleDeletePost={this.handleDeletePost}
-        handleEditPost={this.handleEditPost}
-      />
-    );
     this.setState({ shownPostsDivs: tmpPostsDivs });
   }
 
@@ -130,6 +168,8 @@ class PostsProfileSection extends Component {
         if (posts.length === 0) {
           this.setState({ noMorePosts: true });
         } else {
+          if (this.state.fetchedPosts.length === 0)
+            this.beforeDate = posts[0].timestamp;
           this.setState({
             fetchedPosts: this.state.fetchedPosts.concat(posts),
           });
@@ -148,14 +188,13 @@ class PostsProfileSection extends Component {
     const escapePosts = this.state.fetchedPosts.length;
     const limitPosts = this.numPostsToFetch;
 
-    //console.log(`${escapePosts} ${limitPosts}`);
-
     return new Promise((resolve, reject) => {
       fetch(
         `/get-posts/${this.props.profileId}?` +
           new URLSearchParams({
             esc: escapePosts,
             limit: limitPosts,
+            beforeDate: this.beforeDate,
           }),
         {
           method: "GET",
@@ -168,7 +207,7 @@ class PostsProfileSection extends Component {
           if (!res.valid) {
             // TODO :: Handle invalid fetch
           } else {
-            //console.log(res.posts.length);
+            console.log(res.posts);
             return resolve(res.posts);
           }
         });
@@ -176,7 +215,7 @@ class PostsProfileSection extends Component {
   }
 
   pushToShownPosts() {
-    const tmpPostsDivs = [];
+    const tmpPostsDivs = [...this.state.shownPostsDivs];
 
     let toPushLeft = this.state.shownPostsDivs.length;
     let toPushRight = Math.min(
@@ -189,6 +228,7 @@ class PostsProfileSection extends Component {
         <Post
           id={this.state.fetchedPosts[i].id}
           postIndex={tmpPostsDivs.length}
+          timestamp={this.state.fetchedPosts[i].timestamp}
           postOwnerData={{
             id: this.props.profileId,
             firstName: this.props.profileData.firstName,
@@ -210,7 +250,7 @@ class PostsProfileSection extends Component {
     }
 
     this.setState({
-      shownPostsDivs: this.state.shownPostsDivs.concat(tmpPostsDivs),
+      shownPostsDivs: tmpPostsDivs,
       firstFetchDone: true,
     });
   }
@@ -255,9 +295,15 @@ class PostsProfileSection extends Component {
     }
 
     return (
-      <div>
+      <>
+        <Posting
+          identity={this.props.identity}
+          isMyProfile={this.props.isMyProfile}
+          profileData={this.props.profileData}
+          pushingNewPost={this.pushingNewPost}
+        />
         {this.state.shownPostsDivs} {endDiv}
-      </div>
+      </>
     );
   }
 }

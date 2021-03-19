@@ -59,15 +59,14 @@
 
 .post-footer {
   width: 100%;
-  //border-top: $post-inner-border;
+  border-bottom: $post-inner-border;
 
   display: flex;
   flex-direction: column;
+  flex-wrap: nowrap;
   Button {
     width: 100%;
   }
-
-  flex-wrap: nowrap;
 }
 
 .post-more-div {

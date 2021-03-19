@@ -1,5 +1,4 @@
 import { TextField, TextareaAutosize, Grid, Button } from "@material-ui/core";
-import Posting from "./posting";
 import PostsProfileSection from "./postsProfileSection";
 import { useState, useEffect } from "react";
 
@@ -37,11 +36,6 @@ const ProfilePostsOption = (props) => {
       </Grid>
 
       <Grid id="profile-right-column" item sm={7} lg={7} xs={12}>
-        <Posting
-          identity={props.identity}
-          isMyProfile={props.isMyProfile}
-          profileData={props.profileData}
-        />
         <PostsProfileSection
           identity={props.identity}
           isMyProfile={props.isMyProfile}

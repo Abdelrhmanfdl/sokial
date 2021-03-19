@@ -17,7 +17,6 @@ class PostCommentsSections extends Component {
       fetchedComments: [],
       shownCommentsDivs: [],
     };
-
     this.textareaRef = createRef(null);
 
     this.numCommentsToFetch = 100; // It's a parameter that can be changed
@@ -36,6 +35,53 @@ class PostCommentsSections extends Component {
     this.fetchingAuthorsProfileImgs = this.fetchingAuthorsProfileImgs.bind(
       this
     );
+    this.pushingNewComment = this.pushingNewComment.bind(this);
+    this.createComment = this.createComment.bind(this);
+  }
+
+  createComment(commentData) {
+    return (
+      <PostComment
+        id={commentData.id}
+        commentIndex={commentData.index}
+        content={commentData.content}
+        commentAuthor={{
+          ...commentData.author_user,
+          authorProfileImg: commentData.authorProfileImg,
+        }}
+        postOwnerData={this.props.postOwnerData}
+        identity={this.props.identity}
+        handleEditComment={this.handleEditComment}
+        handleDeleteComment={this.handleDeleteComment}
+      />
+    );
+  }
+
+  pushingNewComment(content, commentData) {
+    const tmpFetchedComments = [...this.state.fetchedComments];
+    tmpFetchedComments.push({
+      id: commentData.id,
+      content: content,
+      author_user_id: commentData.author_user_id,
+    });
+
+    const tmpCommentsDivs = [...this.state.shownCommentsDivs];
+    tmpCommentsDivs.push(
+      this.createComment({
+        id: commentData.id,
+        authorUser: {
+          id: commentData.author_user_id,
+          first_name: commentData.first_name,
+          last_name: commentData.last_name,
+        },
+        content,
+        authorProfileImg: this.props.identity.profileImg,
+      })
+    );
+    this.setState({
+      fetchedComments: tmpFetchedComments,
+      shownCommentsDivs: tmpCommentsDivs,
+    });
   }
 
   handleSendComment() {
@@ -51,6 +97,10 @@ class PostCommentsSections extends Component {
     })
       .then((res) => {
         if (!res.ok) throw new Error();
+        return res.json();
+      })
+      .then((res) => {
+        this.pushingNewComment(this.textareaRef.current.value, res.commentData);
       })
       .catch((err) => {
         console.log(err.message);
@@ -71,24 +121,17 @@ class PostCommentsSections extends Component {
       });
 
     let tmpCommentsDivs = [...this.state.shownCommentsDivs];
-    tmpCommentsDivs[commentIndex] = (
-      <PostComment
-        id={this.state.fetchedComments[commentIndex].id}
-        commentIndex={commentIndex}
-        content={newContent}
-        c
-        commentAuthor={{
-          ...this.state.fetchedComments[commentIndex].author_user,
-          authorProfileImg: this.state.fetchedComments[commentIndex]
-            .authorProfileImg,
-        }}
-        postOwnerData={this.props.postOwnerData}
-        identity={this.props.identity}
-        handleEditComment={this.handleEditComment}
-        handleDeleteComment={this.handleDeleteComment}
-      />
-    );
-    this.setState({ shownCommentsDivs: tmpCommentsDivs });
+    let tmpFetcedComments = [...this.state.fetchedComments];
+    tmpFetcedComments[commentIndex].content = newContent;
+
+    tmpCommentsDivs[commentIndex] = {
+      ...tmpCommentsDivs[commentIndex],
+      props: { ...tmpCommentsDivs[commentIndex].props, content: newContent },
+    };
+    this.setState({
+      shownCommentsDivs: tmpCommentsDivs,
+      fetchedComments: tmpFetcedComments,
+    });
   }
 
   handleDeleteComment(commentIndex) {
@@ -97,14 +140,17 @@ class PostCommentsSections extends Component {
     })
       .then((res) => {
         if (!res.ok) throw new Error("Failed to delete comment");
+        let tmpCommentsDivs = [...this.state.shownCommentsDivs];
+        let tmpFetcedComments = [...this.state.fetchedComments];
+        tmpCommentsDivs[commentIndex] = tmpFetcedComments[commentIndex] = null;
+        this.setState({
+          shownCommentsDivs: tmpCommentsDivs,
+          fetchedComments: tmpFetcedComments,
+        });
       })
       .catch((err) => {
         console.log(err.message);
       });
-
-    let tmpCommentsDivs = [...this.state.shownCommentsDivs];
-    tmpCommentsDivs[commentIndex] = null;
-    this.setState({ shownCommentsDivs: tmpCommentsDivs });
   }
 
   handleWaitingForComments() {
@@ -171,7 +217,7 @@ class PostCommentsSections extends Component {
     );
 
     for (let i = toPushLeft; i < toPushRight; i++) {
-      //console.log(this.state.fetchedComments[i].author_user);
+      console.log(this.state.fetchedComments[i].author_user);
       tmpCommentsDivs.push(
         <PostComment
           id={this.state.fetchedComments[i].id}
@@ -301,19 +347,27 @@ class PostCommentsSections extends Component {
       return (
         <div>
           <div className="post-comments-section">
+            {this.state.shownCommentsDivs}
+            {endDiv}
+
             <div class="post-commenting-section">
               <TextareaAutosize
                 autoFocus
-                rowsMin={2}
+                rowsMin={1}
                 rowsMax={8}
                 ref={this.textareaRef}
+                placeholder="Write a comment..."
                 style={{
                   width: "100%",
+                  minHeight: "34px",
                   resize: "none",
                   overflow: "auto",
+                  border: "none",
                   outlineStyle: "none",
-                  borderRadius: "5px",
+                  borderRadius: "18px",
                   fontSize: "large",
+                  background: "#f0f2f5",
+                  padding: "7px 0 0 15px",
                 }}
               />
               <div style={{ width: "10%", position: "relative" }}>
@@ -325,9 +379,7 @@ class PostCommentsSections extends Component {
                 />
               </div>
             </div>
-            {this.state.shownCommentsDivs}
           </div>
-          {endDiv}
         </div>
       );
   }

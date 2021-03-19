@@ -14,11 +14,12 @@ Props:
 - postIndex
 - postOwnerData
 - myReactionType
-,- content
+- content
 - identity
 - toggleReaction
 - handleDeletePost
 - handleEditPost
+- specificStyle
 */
 
 const Post = (props) => {
@@ -66,19 +67,18 @@ const Post = (props) => {
   };
 
   const handleToggleLike = () => {
+    props.toggleReaction(props.postIndex, props.myReactionType ? null : "1");
     fetch(
       `/post/react/${props.id}?` + new URLSearchParams({ reaction_type: "1" }),
       { method: "POST" }
     ).then((res) => {
       if (!res.ok) throw new Error();
     });
-
-    props.toggleReaction(props.postIndex, props.myReactionType ? null : "1");
   };
 
   return (
     <Grid id="tmp-post-container">
-      <div className="post">
+      <div className="post" style={{ ...props.specificStyle }}>
         <div className="post-header">
           <div className="post-identity-container">
             <a
