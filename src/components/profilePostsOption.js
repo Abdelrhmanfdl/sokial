@@ -20,11 +20,11 @@ const ProfilePostsOption = (props) => {
           About
         </div>
         <div
-          id="profile-posts-photos-section"
+          id="profile-posts-images-section"
           className="profile-posts-section"
           item
         >
-          Photos
+          Images
         </div>
         <div
           id="profile-posts-friends-section"

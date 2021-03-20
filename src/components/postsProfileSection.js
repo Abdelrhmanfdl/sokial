@@ -34,22 +34,14 @@ class PostsProfileSection extends Component {
     this.createPost = this.createPost.bind(this);
   }
 
-  createPost(postData) {
+  createPost(newPost) {
     return (
       <Post
-        id={postData.id}
-        postIndex={postData.index}
-        myReactionType={postData.reactions[0]}
-        content={postData.content}
-        timestamp={postData.timestamp}
-        specificStyle={postData.specificStyle}
-        postOwnerData={{
-          ...this.props.profileData,
-        }}
-        postCounters={{
-          reactionsCounter: postData.reactions_counter,
-          commentsCounter: postData.comments_counter,
-        }}
+        key={newPost.postData.id}
+        postData={newPost.postData}
+        postAuthorData={newPost.postAuthorData}
+        myReactionType={newPost.reactions[0]}
+        specificStyle={newPost.specificStyle}
         identity={this.props.identity}
         toggleReaction={this.toggleReaction}
         handleDeletePost={this.handleDeletePost}
@@ -58,18 +50,15 @@ class PostsProfileSection extends Component {
     );
   }
 
-  pushingNewPost(content, postData) {
-    // Show the new post with some other features "temporary"
-
+  pushingNewPost(newPost) {
     const tmpFetched = [...this.state.fetchedPosts];
     tmpFetched.unshift({
-      id: postData.id,
-      content: content,
-      privacy: postData.privacy,
-      comments_counter: 0,
-      reactions: [],
-      reactions_counter: 0,
-      author_user_id: postData.author_user_id,
+      postData: {
+        ...newPost.postData,
+        postIndex: 0,
+      },
+      postAuthorData: newPost.postAuthorData,
+      reactions: newPost.reactions,
       specificStyle: {
         border: "1px #3f51b5 solid",
         cursor: "progress",
@@ -88,7 +77,7 @@ class PostsProfileSection extends Component {
   }
 
   handleEditPost(postIndex, newContent) {
-    fetch(`/post/${this.state.fetchedPosts[postIndex].id}`, {
+    fetch(`/post/${this.state.fetchedPosts[postIndex].postData.id}`, {
       method: "PUT",
       headers: { "Content-type": "application/json; charset=UTF-8" },
       body: JSON.stringify({
@@ -100,7 +89,7 @@ class PostsProfileSection extends Component {
         if (!res.ok) throw new Error("Error in editing the post");
 
         let tmpFetchedPosts = [...this.state.fetchedPosts];
-        tmpFetchedPosts[postIndex].content = newContent;
+        tmpFetchedPosts[postIndex].postData.content = newContent;
 
         let tmpPostsDivs = [...this.state.shownPostsDivs];
 
@@ -109,7 +98,7 @@ class PostsProfileSection extends Component {
           ...tmpPostsDivs[postIndex],
           props: { ...tmpPostsDivs[postIndex].props },
         };
-        tmpPostsDivs[postIndex].props.content = newContent;
+        tmpPostsDivs[postIndex].props.postData.content = newContent;
 
         this.setState({
           shownPostsDivs: tmpPostsDivs,
@@ -122,7 +111,7 @@ class PostsProfileSection extends Component {
   }
 
   handleDeletePost(postIndex) {
-    fetch(`/post/${this.state.fetchedPosts[postIndex].id}`, {
+    fetch(`/post/${this.state.fetchedPosts[postIndex].postData.id}`, {
       method: "DELETE",
     })
       .then((res) => {
@@ -164,6 +153,27 @@ class PostsProfileSection extends Component {
     if (this.state.fetchedPosts.length === this.state.shownPostsDivs.length) {
       // Need to fetch new posts
       this.fetchNewPosts().then((posts) => {
+        posts = posts.map((post) => {
+          return {
+            postData: {
+              id: post.id,
+              content: post.content,
+              timestamp: post.timestamp,
+              privacy: post.privacy,
+              postCounters: {
+                reactionsCounter: post.reactions_counter,
+                commentsCounter: post.comments_counter,
+              },
+            },
+            postAuthorData: {
+              id: post.author_user_id,
+              firstName: this.props.profileData.firstName,
+              lastName: this.props.profileData.lastName,
+              profileImage: this.props.profileData.profileImage,
+            },
+            reactions: post.reactions,
+          };
+        });
         //console.log("Fetched posts >> ", posts);
         if (posts.length === 0) {
           this.setState({ noMorePosts: true });
@@ -226,22 +236,14 @@ class PostsProfileSection extends Component {
     for (let i = toPushLeft; i < toPushRight; i++) {
       tmpPostsDivs.push(
         <Post
-          id={this.state.fetchedPosts[i].id}
-          postIndex={tmpPostsDivs.length}
-          timestamp={this.state.fetchedPosts[i].timestamp}
-          postOwnerData={{
-            id: this.props.profileId,
-            firstName: this.props.profileData.firstName,
-            lastName: this.props.profileData.lastName,
-            profileImg: this.props.profileData.profileImg,
+          key={this.state.fetchedPosts[i].postData.id}
+          postData={{
+            ...this.state.fetchedPosts[i].postData,
+            postIndex: tmpPostsDivs.length,
           }}
-          postCounters={{
-            reactionsCounter: this.state.fetchedPosts[i].reactions_counter,
-            commentsCounter: this.state.fetchedPosts[i].comments_counter,
-          }}
-          myReactionType={this.state.fetchedPosts[i].reactions[0]}
-          content={this.state.fetchedPosts[i].content}
+          postAuthorData={this.state.fetchedPosts[i].postAuthorData}
           identity={this.props.identity}
+          myReactionType={this.state.fetchedPosts[i].reactions[0]}
           toggleReaction={this.toggleReaction}
           handleDeletePost={this.handleDeletePost}
           handleEditPost={this.handleEditPost}

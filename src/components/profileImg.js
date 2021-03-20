@@ -25,12 +25,12 @@ const ProfileImg = (props) => {
 
   useEffect(() => {
     console.log(Avatar);
-    if (uploadedImgRef.current && props.profileData.profile_photo_path) {
-      uploadedImgRef.current.src = props.profileData.profileImg || " ";
+    if (uploadedImgRef.current && props.profileData.profile_image_path) {
+      uploadedImgRef.current.src = props.profileData.profileImage || " ";
     } else if (uploadedImgRef.current) {
       uploadedImgRef.current.src = Avatar;
     }
-  }, [props.profileData.profileImg, uploadedImgRef, window.location.href]);
+  }, [props.profileData.profileImage, uploadedImgRef, window.location.href]);
 
   const handleSelectImg = (img) => {
     // This is used when the user select an img, then he needs to confirm it or cancel.

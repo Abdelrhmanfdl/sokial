@@ -106,8 +106,8 @@ const ProfileHeader = (props) => {
           About
         </Button>
 
-        <Button id="profile-header-photos-option-btn" size="large">
-          Photos
+        <Button id="profile-header-images-option-btn" size="large">
+          Images
         </Button>
       </div>
     </div>

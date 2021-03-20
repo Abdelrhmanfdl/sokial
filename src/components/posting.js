@@ -18,8 +18,12 @@ const Posting = ({ identity, isMyProfile, pushingNewPost }) => {
   const postingAuthorProfileImgRef = useRef(null);
 
   useEffect(() => {
-    if (identity && identity.profileImg && postingAuthorProfileImgRef.current) {
-      postingAuthorProfileImgRef.current.src = identity.profileImg || " ";
+    if (
+      identity &&
+      identity.profileImage &&
+      postingAuthorProfileImgRef.current
+    ) {
+      postingAuthorProfileImgRef.current.src = identity.profileImage || " ";
     } else if (postingAuthorProfileImgRef.current) {
       postingAuthorProfileImgRef.current.src = Avatar;
     }
@@ -58,7 +62,26 @@ const Posting = ({ identity, isMyProfile, pushingNewPost }) => {
       })
       .then((res) => {
         console.log(res);
-        pushingNewPost(textareaRef.current.value, res.postData);
+        pushingNewPost({
+          postData: {
+            id: res.postData.id,
+            content: textareaRef.current.value,
+            timestamp: res.postData.timestamp,
+            privacy: res.postData.privacy,
+            postType: res.postData.post_type,
+            postCounters: {
+              commentsCounter: res.postData.comments_counter,
+              reactionsCounter: res.postData.reactions_counter,
+            },
+          },
+          postAuthorData: {
+            id: res.postData.author_user_id,
+            firstName: identity.firstName,
+            lastName: identity.lastName,
+            profileImage: identity.profileImage,
+          },
+          reactions: [],
+        });
       })
       .catch((res) => {
         /*

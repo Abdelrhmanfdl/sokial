@@ -40,13 +40,13 @@ const Profile = (props) => {
         else {
           setFriendshipRel(res.friendshipRel);
 
-          if (res.userData.profile_photo_path)
+          if (res.userData.profile_image_path)
             return Promise.all([
               res.userData,
               fetch(
                 `/get-profile-img/${res.userData.id}?` +
                   new URLSearchParams({
-                    profile_photo_path: res.userData.profile_photo_path,
+                    profile_image_path: res.userData.profile_image_path,
                   })
               ),
             ]);
@@ -58,7 +58,7 @@ const Profile = (props) => {
       })
       .then(([userData, img]) => {
         img = URL.createObjectURL(img);
-        setProfileData({ ...userData, profileImg: img });
+        setProfileData({ ...userData, profileImage: img });
       })
       .catch((err) => {
         console.log("ERROR:", err.message);

@@ -12,7 +12,7 @@ import { set } from "date-fns";
 Props: 
 - id: post id
 - postIndex
-- postOwnerData
+- postAuthorData
 - myReactionType
 - content
 - identity
@@ -46,19 +46,19 @@ const Post = (props) => {
   useEffect(() => {
     if (
       authorProfileImgRef.current &&
-      props.postOwnerData &&
-      props.postOwnerData.profileImg
+      props.postAuthorData &&
+      props.postAuthorData.profileImage
     ) {
-      authorProfileImgRef.current.src = props.postOwnerData.profileImg;
+      authorProfileImgRef.current.src = props.postAuthorData.profileImage;
     }
   }, [
     authorProfileImgRef,
-    props.postOwnerData.profileImg,
+    props.postAuthorData.profileImage,
     window.location.href,
   ]);
 
   const handleClickDeletePost = () => {
-    props.handleDeletePost(props.postIndex);
+    props.handleDeletePost(props.postData.postIndex);
     handleCloseMoreOptions(false);
   };
   const handleClickEditPost = () => {
@@ -67,9 +67,13 @@ const Post = (props) => {
   };
 
   const handleToggleLike = () => {
-    props.toggleReaction(props.postIndex, props.myReactionType ? null : "1");
+    props.toggleReaction(
+      props.postData.postIndex,
+      props.myReactionType ? null : "1"
+    );
     fetch(
-      `/post/react/${props.id}?` + new URLSearchParams({ reaction_type: "1" }),
+      `/post/react/${props.postData.id}?` +
+        new URLSearchParams({ reaction_type: "1" }),
       { method: "POST" }
     ).then((res) => {
       if (!res.ok) throw new Error();
@@ -82,17 +86,17 @@ const Post = (props) => {
         <div className="post-header">
           <div className="post-identity-container">
             <a
-              href={`${window.location.origin}/profile?id=${props.postOwnerData.id}`}
+              href={`${window.location.origin}/profile?id=${props.postAuthorData.id}`}
             >
-              <img className="post-profile-photo" ref={authorProfileImgRef} />
+              <img className="post-profile-image" ref={authorProfileImgRef} />
             </a>
 
             <a
               className="clickable-account-name"
-              href={`${window.location.origin}/profile?id=${props.postOwnerData.id}`}
-            >{`${props.postOwnerData.firstName} ${props.postOwnerData.lastName}`}</a>
+              href={`${window.location.origin}/profile?id=${props.postAuthorData.id}`}
+            >{`${props.postAuthorData.firstName} ${props.postAuthorData.lastName}`}</a>
 
-            {props.identity.id == props.postOwnerData.id ? (
+            {props.identity.id == props.postAuthorData.id ? (
               <div className="post-more-div">
                 <Menu
                   open={isMoreOptionsOpen}
@@ -117,13 +121,13 @@ const Post = (props) => {
         </div>
 
         <div ref={postContentRef} className="post-content">
-          {props.content}
+          {props.postData.content}
         </div>
         <div className="post-footer">
           <div className="post-counters">
             <div
               className="post-reaction-counter"
-              hidden={props.postCounters.reactionsCounter == 0}
+              hidden={props.postData.postCounters.reactionsCounter == 0}
             >
               <ThumbUpAltIcon
                 style={{
@@ -133,14 +137,14 @@ const Post = (props) => {
                 }}
                 color={"primary"}
               />
-              {props.postCounters.reactionsCounter} Likes
+              {props.postData.postCounters.reactionsCounter} Likes
             </div>
             <div
               className="post-comment-counter"
-              hidden={props.postCounters.commentsCounter == 0}
+              hidden={props.postData.postCounters.commentsCounter == 0}
               onClick={handleToggleCommentsSection}
             >
-              {props.postCounters.commentsCounter} Comments
+              {props.postData.postCounters.commentsCounter} Comments
             </div>
           </div>
           <div className="post-btns">
@@ -168,13 +172,13 @@ const Post = (props) => {
         </div>
         <PostCommentsSections
           identity={props.identity}
-          postOwnerData={props.postOwnerData}
-          postId={props.id}
+          postAuthorData={props.postAuthorData}
+          postData={props.postData}
           openCommentsSection={openCommentsSection}
         />
       </div>
       <PostEditing
-        postIndex={props.postIndex}
+        postIndex={props.postData.postIndex}
         editingPost={editingPost}
         setEditingPost={setEditingPost}
         postContentRef={postContentRef}

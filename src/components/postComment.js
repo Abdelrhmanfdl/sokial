@@ -10,6 +10,9 @@ import Avatar from "./../images/default_profile_image.png";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 
 const PostComment = (props) => {
+  const [commentAuthorProfileImage, setCommentAuthorProfileImage] = useState(
+    null
+  );
   const [menuAnchorElem, setMenuAnchorElem] = useState(null);
   const [editing, setEditing] = useState(false);
   const editingAreaRef = useRef(null);
@@ -17,16 +20,36 @@ const PostComment = (props) => {
   const isMoreOptionsOpen = menuAnchorElem !== null;
 
   useEffect(() => {
+    // Component did mount, Fetch image
+    if (props.commentAuthorData.profileImagePath) {
+      fetch(
+        `/get-profile-img/${props.commentAuthorData.id}?` +
+          new URLSearchParams({
+            profile_image_path: props.commentAuthorData.profileImagePath,
+          })
+      )
+        .then((res) => {
+          if (res && res.ok) return res.blob();
+        })
+        .then((res) => {
+          const img = URL.createObjectURL(res);
+          setCommentAuthorProfileImage(img);
+        })
+        .catch((err) => {});
+    }
+  }, []);
+
+  useEffect(() => {
     if (
       authorProfileImgRef &&
       authorProfileImgRef.current &&
-      props.commentAuthor.authorProfileImg
+      commentAuthorProfileImage
     ) {
-      authorProfileImgRef.current.src = props.commentAuthor.authorProfileImg;
+      authorProfileImgRef.current.src = commentAuthorProfileImage;
     } else if (authorProfileImgRef.current) {
       authorProfileImgRef.current.src = Avatar;
     }
-  }, [authorProfileImgRef, props.commentAuthor.authorProfileImg]);
+  }, [authorProfileImgRef, commentAuthorProfileImage]);
 
   const handleOpenMoreOptions = (event) => {
     setMenuAnchorElem(event.target);
@@ -42,13 +65,16 @@ const PostComment = (props) => {
   };
 
   const handleSaveEdit = () => {
-    props.handleEditComment(props.commentIndex, editingAreaRef.current.value);
+    props.handleEditComment(
+      props.commentData.commentIndex,
+      editingAreaRef.current.value
+    );
     setEditing(false);
     handleCloseMoreOptions();
   };
 
   const handleDeleteComment = () => {
-    props.handleDeleteComment(props.commentIndex);
+    props.handleDeleteComment(props.commentData.commentIndex);
     setEditing(false);
     handleCloseMoreOptions();
   };
@@ -56,21 +82,21 @@ const PostComment = (props) => {
   return (
     <div className="post-comment">
       <a
-        href={`${window.location.origin}/profile?id=${props.commentAuthor.id}`}
+        href={`${window.location.origin}/profile?id=${props.commentAuthorData.id}`}
       >
         <img ref={authorProfileImgRef} className="comment-author-img"></img>
       </a>
       <div className="comment-right-col">
         <a
           className="clickable-account-name comment-author-name"
-          href={`${window.location.origin}/profile?id=${props.commentAuthor.id}`}
+          href={`${window.location.origin}/profile?id=${props.commentAuthorData.id}`}
         >
-          {`${props.commentAuthor.first_name} ${props.commentAuthor.last_name}`}
+          {`${props.commentAuthorData.firstName} ${props.commentAuthorData.lastName}`}
         </a>
 
         <div className="comment-content">
           {!editing ? (
-            props.content
+            props.commentData.content
           ) : (
             <div
               class="post-commenting-section"
@@ -80,7 +106,7 @@ const PostComment = (props) => {
                 rowsMin={2}
                 rowsMax={8}
                 ref={editingAreaRef}
-                defaultValue={props.content}
+                defaultValue={props.commentData.content}
                 style={{
                   width: "100%",
                   resize: "none",
@@ -111,7 +137,7 @@ const PostComment = (props) => {
           )}
         </div>
       </div>
-      {props.commentAuthor.id === props.identity.id ? (
+      {props.commentAuthorData.id === props.identity.id ? (
         <div className="comment-more-div">
           {!editing ? (
             <Button
