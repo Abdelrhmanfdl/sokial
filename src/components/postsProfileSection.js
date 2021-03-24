@@ -32,6 +32,48 @@ class PostsProfileSection extends Component {
     this.handleEditPost = this.handleEditPost.bind(this);
     this.pushingNewPost = this.pushingNewPost.bind(this);
     this.createPost = this.createPost.bind(this);
+    this.updatePostCounters = this.updatePostCounters.bind(this);
+  }
+
+  updatePostCounters(postIndex, newCounters) {
+    // Update my reaction in the state, because in the toggle function i just temporarily updated it.
+    // Also, it updates the post counters... comments and reactions.
+
+    let tmpFetchedPosts = [...this.state.fetchedPosts],
+      willTurnOffReaction = false;
+    if (tmpFetchedPosts[postIndex].reactions.length) {
+      tmpFetchedPosts[postIndex].reactions.pop();
+      willTurnOffReaction = true;
+    } else tmpFetchedPosts[postIndex].reactions.push(1);
+
+    tmpFetchedPosts[postIndex].postData = {
+      ...tmpFetchedPosts[postIndex].postData,
+      postCounters: {
+        reactionsCounter: newCounters.reactions_counter,
+        commentsCounter: newCounters.comments_counter,
+      },
+    };
+
+    let tmpPostsDivs = [...this.state.shownPostsDivs];
+    tmpPostsDivs[postIndex] = {
+      ...tmpPostsDivs[postIndex],
+      props: {
+        ...tmpPostsDivs[postIndex].props,
+        postData: {
+          ...tmpPostsDivs[postIndex].props.postData,
+          postCounters: {
+            reactionsCounter: newCounters.reactions_counter,
+            commentsCounter: newCounters.comments_counter,
+          },
+        },
+        myReactionType: willTurnOffReaction ? null : 1,
+      },
+    };
+
+    this.setState({
+      shownPostsDivs: tmpPostsDivs,
+      fetchedPosts: tmpFetchedPosts,
+    });
   }
 
   createPost(newPost) {
@@ -39,13 +81,15 @@ class PostsProfileSection extends Component {
       <Post
         key={newPost.postData.id}
         postData={newPost.postData}
+        postIndex={newPost.postIndex}
         postAuthorData={newPost.postAuthorData}
-        myReactionType={newPost.reactions[0]}
+        myReactionType={newPost.reactions ? newPost.reactions[0] : null}
         specificStyle={newPost.specificStyle}
         identity={this.props.identity}
         toggleReaction={this.toggleReaction}
         handleDeletePost={this.handleDeletePost}
         handleEditPost={this.handleEditPost}
+        updatePostCounters={this.updatePostCounters}
       />
     );
   }
@@ -53,10 +97,8 @@ class PostsProfileSection extends Component {
   pushingNewPost(newPost) {
     const tmpFetched = [...this.state.fetchedPosts];
     tmpFetched.unshift({
-      postData: {
-        ...newPost.postData,
-        postIndex: 0,
-      },
+      postData: newPost.postData,
+
       postAuthorData: newPost.postAuthorData,
       reactions: newPost.reactions,
       specificStyle: {
@@ -67,11 +109,12 @@ class PostsProfileSection extends Component {
 
     this.setState({ fetchedPosts: tmpFetched }, function () {
       const tmpPostsDivs = [];
-      this.state.fetchedPosts.map((post, idx) => {
+      for (let i = 0; i < this.state.shownPostsDivs.length + 1; i++) {
+        const post = this.state.fetchedPosts[i];
         tmpPostsDivs.push(
-          post !== null ? this.createPost({ ...post, index: idx }) : null
+          post !== null ? this.createPost({ ...post, postIndex: i }) : null
         );
-      });
+      }
       this.setState({ shownPostsDivs: tmpPostsDivs });
     });
   }
@@ -129,10 +172,9 @@ class PostsProfileSection extends Component {
   }
 
   toggleReaction(postIndex, newReactionType) {
-    /* This function is for improving UX, 
-       When a user reacts to a post the reaction button has to change its color as fast ass possible,
-       not to wait for server act or refreshing the page.
-       I assume here that the 'fetchedPosts' array won't change its content order.
+    /* Temporarily!!, will respond to the user action till the server confirms this action.
+       This function is for improving UX, 
+       When a user reacts to a post the reaction button has to change its color as fast ass possible.
     */
 
     let tmpPostsDivs = [...this.state.shownPostsDivs];
@@ -154,12 +196,14 @@ class PostsProfileSection extends Component {
       // Need to fetch new posts
       this.fetchNewPosts().then((posts) => {
         posts = posts.map((post) => {
+          console.log(post);
           return {
             postData: {
               id: post.id,
               content: post.content,
               timestamp: post.timestamp,
               privacy: post.privacy,
+              postImageData: post.post_images,
               postCounters: {
                 reactionsCounter: post.reactions_counter,
                 commentsCounter: post.comments_counter,
@@ -237,16 +281,19 @@ class PostsProfileSection extends Component {
       tmpPostsDivs.push(
         <Post
           key={this.state.fetchedPosts[i].postData.id}
-          postData={{
-            ...this.state.fetchedPosts[i].postData,
-            postIndex: tmpPostsDivs.length,
-          }}
+          postData={this.state.fetchedPosts[i].postData}
           postAuthorData={this.state.fetchedPosts[i].postAuthorData}
           identity={this.props.identity}
-          myReactionType={this.state.fetchedPosts[i].reactions[0]}
+          postIndex={tmpPostsDivs.length}
+          myReactionType={
+            this.state.fetchedPosts[i].reactions
+              ? this.state.fetchedPosts[i].reactions[0]
+              : null
+          }
           toggleReaction={this.toggleReaction}
           handleDeletePost={this.handleDeletePost}
           handleEditPost={this.handleEditPost}
+          updatePostCounters={this.updatePostCounters}
         />
       );
     }

@@ -1,17 +1,8 @@
 import { useState, useRef, useEffect } from "react";
-import {
-  TextField,
-  TextareaAutosize,
-  Grid,
-  Button,
-  IconButton,
-} from "@material-ui/core";
-import AddCircleIcon from "@material-ui/icons/AddCircle";
-import RemoveCircleIcon from "@material-ui/icons/RemoveCircle";
+import { IconButton } from "@material-ui/core";
 import CancelIcon from "@material-ui/icons/Cancel";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
-import { friendshipRelatedFunctions } from "../usable functions/endpoint-related";
 import Avatar from "./../images/default_profile_image.png";
 
 const ProfileImg = (props) => {

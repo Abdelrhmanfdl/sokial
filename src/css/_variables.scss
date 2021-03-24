@@ -20,6 +20,11 @@ $post-comment-bg: rgb(240, 242, 245);
 
 $post-footer-main-font-color: rgb(101, 103, 107);
 
+$post-img-width: 466px;
+$post-img-height: 400px;
+$posting-dialoge-width: 485px;
+$posting-dialoge-heigth: 600px;
+
 @mixin profile-section {
   border-radius: 8px;
   background-color: white;

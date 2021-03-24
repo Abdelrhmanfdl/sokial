@@ -37,7 +37,6 @@ class PostCommentsSections extends Component {
   }
 
   createComment(newComment) {
-    console.log("zzz", newComment);
     return (
       <PostComment
         key={newComment.commentData.id}
