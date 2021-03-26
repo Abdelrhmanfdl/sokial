@@ -188,7 +188,7 @@ class PostCommentsSections extends Component {
             },
           };
         });
-        console.log("Fetched comments >> ", comments);
+        //console.log("Fetched comments >> ", comments);
         if (comments.length === 0) {
           this.setState({ noMoreComments: true });
         } else {

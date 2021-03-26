@@ -1,7 +1,9 @@
 import { Modal } from "@material-ui/core";
 import { Component } from "react";
-import { Button } from "@material-ui/core";
+import { Button, IconButton } from "@material-ui/core";
+import PostReactantEntry from "./postReactantEntry";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import ClearIcon from "@material-ui/icons/Clear";
 
 class PostReactantsModal extends Component {
   constructor(props) {
@@ -27,7 +29,6 @@ class PostReactantsModal extends Component {
   }
 
   handleWaitingForEntries() {
-    /*
     this.setState({ waitingForEntries: true });
 
     if (
@@ -38,7 +39,7 @@ class PostReactantsModal extends Component {
           this.setState({ noMoreEntries: true });
         } else {
           if (this.state.fetchedEntries.length === 0)
-            this.beforeDate = reactants[0].timestamp;
+            this.beforeDate = reactants[0]["reactions.timestamp"];
           this.setState({
             fetchedEntries: this.state.fetchedEntries.concat(reactants),
           });
@@ -51,7 +52,6 @@ class PostReactantsModal extends Component {
 
     this.fetching = false;
     this.setState({ waitingForEntries: false });
-    */
   }
 
   fetchNewEntries() {
@@ -84,7 +84,6 @@ class PostReactantsModal extends Component {
   }
 
   pushToShownEntries() {
-    /*
     const tmpEntriesDivs = [...this.state.shownEntriesDivs];
 
     let toPushLeft = this.state.shownEntriesDivs.length;
@@ -93,13 +92,12 @@ class PostReactantsModal extends Component {
       this.state.fetchedEntries.length
     );
 
-     for (let i = toPushLeft; i < toPushRight; i++) {
+    for (let i = toPushLeft; i < toPushRight; i++) {
       tmpEntriesDivs.push(
-        <Post
-          key={this.state.fetchedEntries[i].postData.id}
-          reactant={this.state.fetchedEntries[i]}
+        <PostReactantEntry
+          key={this.state.fetchedEntries[i].id}
+          reactantData={this.state.fetchedEntries[i]}
           identity={this.props.identity}
-          entryIndex={tmpEntriesDivs.length}
         />
       );
     }
@@ -108,7 +106,6 @@ class PostReactantsModal extends Component {
       shownEntriesDivs: tmpEntriesDivs,
       firstFetchDone: true,
     });
-    */
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -149,14 +146,22 @@ class PostReactantsModal extends Component {
       );
     }
 
+    const tmp = [];
+    for (let z = 0; z < 30; z++) {
+      tmp.push(<PostReactantEntry identity={this.props.identity} />);
+    }
+
     return (
-      <Modal
-        id="reactants-modal"
-        open={this.props.modalOpen}
-        onClose={this.props.closeModal}
-      >
+      <Modal id="reactants-modal" open={true} onClose={this.props.closeModal}>
         <div id="reactants-modal-body">
-          <div id="reactants-modal-header"></div>
+          <div id="reactants-modal-header">
+            <IconButton onClick={this.props.closeModal}>
+              <ClearIcon />
+            </IconButton>
+          </div>
+          <div id="reactants-modal-content">
+            {this.state.shownEntriesDivs} {endDiv}
+          </div>
         </div>
       </Modal>
     );

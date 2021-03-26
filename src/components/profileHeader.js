@@ -13,6 +13,10 @@ const ProfileHeader = (props) => {
     color: "primary",
   };
 
+  useEffect(() => {
+    console.log("new");
+  }, []);
+
   const friendshipRelButton = props.isMyProfile ? null : props.areFriends ? (
     <Button
       {...friendshipButtonsAttr}
@@ -72,7 +76,7 @@ const ProfileHeader = (props) => {
       </Button>
     </div>
   );
-
+  //    console.log("zz: ", props.profileData);
   return (
     <div id="profile-header-div">
       <div id="profile-cover-container"></div>

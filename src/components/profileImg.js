@@ -15,9 +15,9 @@ const ProfileImg = (props) => {
   const uploadedImgRef = useRef(null);
 
   useEffect(() => {
-    console.log(Avatar);
-    if (uploadedImgRef.current && props.profileData.profile_image_path) {
-      uploadedImgRef.current.src = props.profileData.profileImage || " ";
+    //console.log(props.profileData);
+    if (uploadedImgRef.current && props.profileData.profileImage) {
+      uploadedImgRef.current.src = props.profileData.profileImage;
     } else if (uploadedImgRef.current) {
       uploadedImgRef.current.src = Avatar;
     }

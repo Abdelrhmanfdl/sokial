@@ -7,6 +7,7 @@ import ThumbUpAltIcon from "@material-ui/icons/ThumbUpAlt";
 import ThumbUpOutlinedIcon from "@material-ui/icons/ThumbUpOutlined";
 import CommentOutlinedIcon from "@material-ui/icons/CommentOutlined";
 import PostReactantsModal from "./postReactantsModal";
+import Avatar from "./../images/default_profile_image.png";
 import { set } from "date-fns";
 
 const Post = (props) => {
@@ -60,13 +61,9 @@ const Post = (props) => {
   }, []);
 
   useEffect(() => {
-    if (
-      authorProfileImgRef.current &&
-      props.postAuthorData &&
-      props.postAuthorData.profileImage
-    ) {
+    if (authorProfileImgRef.current && props.postAuthorData.profileImage) {
       authorProfileImgRef.current.src = props.postAuthorData.profileImage;
-    }
+    } else authorProfileImgRef.current.src = Avatar;
   }, [
     authorProfileImgRef,
     props.postAuthorData.profileImage,
@@ -103,11 +100,13 @@ const Post = (props) => {
 
   return (
     <Grid id="tmp-post-container">
-      <PostReactantsModal
-        postData={props.postData}
-        modalOpen={reactantsModalOpen}
-        closeModal={closeReactantsModal}
-      />
+      {reactantsModalOpen ? (
+        <PostReactantsModal
+          postData={props.postData}
+          closeModal={closeReactantsModal}
+        />
+      ) : null}
+
       <div className="post" style={{ ...props.specificStyle }}>
         <div className="post-header">
           <div className="post-identity-container">

@@ -196,7 +196,6 @@ class PostsProfileSection extends Component {
       // Need to fetch new posts
       this.fetchNewPosts().then((posts) => {
         posts = posts.map((post) => {
-          console.log(post);
           return {
             postData: {
               id: post.id,
@@ -222,8 +221,9 @@ class PostsProfileSection extends Component {
         if (posts.length === 0) {
           this.setState({ noMorePosts: true });
         } else {
+          console.log(posts[0].postData.timestamp);
           if (this.state.fetchedPosts.length === 0)
-            this.beforeDate = posts[0].timestamp;
+            this.beforeDate = posts[0].postData.timestamp;
           this.setState({
             fetchedPosts: this.state.fetchedPosts.concat(posts),
           });
@@ -261,7 +261,7 @@ class PostsProfileSection extends Component {
           if (!res.valid) {
             // TODO :: Handle invalid fetch
           } else {
-            console.log(res.posts);
+            //console.log(res.posts);
             return resolve(res.posts);
           }
         });

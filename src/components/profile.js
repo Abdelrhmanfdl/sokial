@@ -7,7 +7,7 @@ import ProfileFriendsOption from "./profileFriendsOption";
 import { useState, useEffect } from "react";
 
 const Profile = (props) => {
-  const [profileData, setProfileData] = useState(null);
+  const [profileData, setProfileData] = useState({});
   const [friendshipRel, setFriendshipRel] = useState(null);
   const [profileChosenOption, setProfileChosenOption] = useState("posts");
 
@@ -23,6 +23,7 @@ const Profile = (props) => {
 
   // Get basic data of current profile
   useEffect(() => {
+    let userData;
     fetch(
       `/get-basic-user-data/${params.get("id")}?` +
         new URLSearchParams({
@@ -38,6 +39,7 @@ const Profile = (props) => {
       .then((res) => {
         if (!res.valid) throw new Error(res.message);
         else {
+          userData = res.userData;
           setFriendshipRel(res.friendshipRel);
 
           if (res.userData.profile_image_path)
@@ -62,6 +64,7 @@ const Profile = (props) => {
       })
       .catch((err) => {
         console.log("ERROR:", err.message);
+        if (userData) setProfileData(userData);
       });
   }, [params.get("id")]);
 
@@ -72,6 +75,7 @@ const Profile = (props) => {
     return (
       <div>
         <ProfileHeader
+          //key={profileData.id}
           setProfileChosenOption={setProfileChosenOption}
           profileData={profileData}
           isMyProfile={isMyProfile}
@@ -89,12 +93,14 @@ const Profile = (props) => {
         />
         {profileChosenOption == "posts" ? (
           <ProfilePostsOption
+            key={profileData.id}
             identity={props.identity}
             isMyProfile={isMyProfile}
             profileData={profileData}
           />
         ) : profileChosenOption == "friends" ? (
           <ProfileFriendsOption
+            key={profileData.id}
             identity={props.identity}
             isMyProfile={isMyProfile}
             profileData={profileData}
