@@ -76,7 +76,6 @@ const ProfileHeader = (props) => {
       </Button>
     </div>
   );
-  //    console.log("zz: ", props.profileData);
   return (
     <div id="profile-header-div">
       <div id="profile-cover-container"></div>
@@ -85,7 +84,10 @@ const ProfileHeader = (props) => {
         isMyProfile={props.isMyProfile}
       />
 
-      <div id="profile-name-container">{`${props.profileData.firstName} ${props.profileData.lastName}`}</div>
+      {props.profileData.firstName ? (
+        <div id="profile-name-container">{`${props.profileData.firstName} ${props.profileData.lastName}`}</div>
+      ) : null}
+
       <div id="profile-friendship-buttons-div">{friendshipRelButton}</div>
       <div id="profile-header-options-container">
         <Button

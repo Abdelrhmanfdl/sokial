@@ -12,8 +12,64 @@
 }
 
 #profile-left-column {
+  height: min-content;
   display: flex;
   flex-direction: column;
+  //position: sticky;
+  //top: 70px; // to pass the bar height (64px)
+
+  h3 {
+    margin-top: 0px;
+  }
+
+  .profile-left-col-section {
+    padding: 10px;
+
+    .profile-about-data {
+      display: flex;
+      flex-direction: column;
+
+      .MuiSvgIcon-root {
+        color: $general-section-icon-color;
+      }
+
+      .data-line {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        font-size: medium;
+        margin-bottom: 15px;
+
+        span {
+          font-weight: 500;
+          color: $primary-text;
+        }
+        &.country-data span::before {
+          content: "From ";
+          font-size: 15px;
+          font-weight: 400;
+        }
+        &.city-data span::before {
+          content: "Lives in ";
+          font-size: 15px;
+          font-weight: 400;
+        }
+      }
+    }
+  }
+
+  #profile-posts-images-section {
+    #images {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 5px;
+      border-radius: 8% 8%;
+      img {
+        width: 32%;
+      }
+    }
+  }
 }
 
 #profile-right-column {
@@ -76,5 +132,8 @@
   #profile-two-colums,
   #profile-friends-option-friends-container {
     width: 98%;
+  }
+  #profile-left-column {
+    position: static;
   }
 }

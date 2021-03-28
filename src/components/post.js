@@ -147,7 +147,6 @@ const Post = (props) => {
 
         <div ref={postContentRef} className="post-content">
           <div class="post-content-text">{props.postData.content}</div>
-
           {props.postData.postImageData.length ? (
             <div className="post-image-div">
               <img ref={postImageRef} className="post-image" />
