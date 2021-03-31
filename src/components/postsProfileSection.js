@@ -217,11 +217,9 @@ class PostsProfileSection extends Component {
             reactions: post.reactions,
           };
         });
-        //console.log("Fetched posts >> ", posts);
         if (posts.length === 0) {
           this.setState({ noMorePosts: true });
         } else {
-          console.log(posts[0].postData.timestamp);
           if (this.state.fetchedPosts.length === 0)
             this.beforeDate = posts[0].postData.timestamp;
           this.setState({
@@ -261,7 +259,6 @@ class PostsProfileSection extends Component {
           if (!res.valid) {
             // TODO :: Handle invalid fetch
           } else {
-            //console.log(res.posts);
             return resolve(res.posts);
           }
         });

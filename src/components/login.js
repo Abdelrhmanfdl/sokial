@@ -92,6 +92,7 @@ const Login = (props) => {
           onChange={formik.handleChange}
           error={formik.touched.email && Boolean(formik.errors.email)}
           helperText={formik.touched.email && formik.errors.email}
+          className="login-input-cell"
         />
         <TextField
           id="password"
@@ -102,8 +103,14 @@ const Login = (props) => {
           onChange={formik.handleChange}
           error={formik.touched.password && Boolean(formik.errors.password)}
           helperText={formik.touched.password && formik.errors.password}
+          className="login-input-cell"
         />
-        <Button type="submit" variant="contained" color="primary">
+        <Button
+          type="submit"
+          variant="contained"
+          color="primary"
+          className="login-input-cell"
+        >
           Login
         </Button>
         <small>

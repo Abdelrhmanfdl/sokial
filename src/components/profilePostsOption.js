@@ -51,6 +51,7 @@ const ProfilePostsOption = (props) => {
       id="profile-two-colums"
       direction="row"
       justify={"space-evenly"}
+      style={{ alignItems: "start" }}
       container
     >
       <Grid id="profile-left-column" item sm={4} xs={12}>
@@ -84,6 +85,7 @@ const ProfilePostsOption = (props) => {
         <div
           id="profile-posts-friends-section"
           className="profile-posts-section profile-left-col-section"
+          style={{ display: "none" }}
           item
         >
           <h3> Friends </h3>

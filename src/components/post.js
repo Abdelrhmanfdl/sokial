@@ -15,6 +15,7 @@ const Post = (props) => {
   const [menuAnchorElem, setMenuAnchorElem] = useState(null);
   const [editingPost, setEditingPost] = useState(false);
   const [reactantsModalOpen, setReactantsModalOpen] = useState(false);
+  const [authorProfileImg, setAuthorProfileImg] = useState(null); // I need it in home, image is not in props
   const postContentRef = useRef(null);
   const postImageRef = useRef(null);
   const authorProfileImgRef = useRef(null);
@@ -61,14 +62,35 @@ const Post = (props) => {
   }, []);
 
   useEffect(() => {
-    if (authorProfileImgRef.current && props.postAuthorData.profileImage) {
-      authorProfileImgRef.current.src = props.postAuthorData.profileImage;
+    // if have author image path but not the image, go and fetch it
+    if (
+      !props.postAuthorData.profileImage &&
+      props.postAuthorData.profileImagePath
+    ) {
+      fetch(
+        `/get-profile-img/${props.postAuthorData.id}?` +
+          new URLSearchParams({
+            profile_image_path: props.postAuthorData.profileImagePath,
+          })
+      )
+        .then((res) => (res.ok ? res.blob() : undefined))
+        .then((res) => {
+          if (res) {
+            console.log(res);
+            const img = URL.createObjectURL(res);
+            setAuthorProfileImg(img);
+          }
+        });
+    } else if (props.postAuthorData.profileImage) {
+      setAuthorProfileImg(props.postAuthorData.profileImage);
+    }
+  }, [props.postAuthorData]);
+
+  useEffect(() => {
+    if (authorProfileImgRef.current && authorProfileImg) {
+      authorProfileImgRef.current.src = authorProfileImg;
     } else authorProfileImgRef.current.src = Avatar;
-  }, [
-    authorProfileImgRef,
-    props.postAuthorData.profileImage,
-    window.location.href,
-  ]);
+  }, [authorProfileImgRef, authorProfileImg]);
 
   const handleClickDeletePost = () => {
     props.handleDeletePost(props.postIndex);
