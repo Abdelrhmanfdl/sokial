@@ -15,11 +15,13 @@
 
 ![image](https://github.com/Abdelrhmanfdl/sokial/blob/main/Shots/3.png)
 <hr/>
+
 ![image](https://github.com/Abdelrhmanfdl/sokial/blob/main/Shots/4.png)
 <hr/>
 
 ![image](https://github.com/Abdelrhmanfdl/sokial/blob/main/Shots/5.png)
 <hr/>
+
 ![image](https://github.com/Abdelrhmanfdl/sokial/blob/main/Shots/6.png)
 <hr/>
 
